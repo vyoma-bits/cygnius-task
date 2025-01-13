@@ -39,428 +39,37 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                password:
-                  type: string
-                name:
-                  type: string
-                phone:
-                  type: number
-              required:
-                - email
-                - password
-                - name
-                - phone
+              allOf:
+                - $ref: '#/components/schemas/ClientRequest'
+
       responses:
         '200':
           description: Client account created successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Client added successfully"
-                  data:
-                    type: object
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
                     properties:
-                      email:
-                        type: string
-                      name:
-                        type: string
-                      password:
-                        type: string
-                      clientId:
-                        type: string
-                      timeStampCreated:
-                        type: integer
+                      data:
+                        $ref: '#/components/schemas/ClientResponse'
         '400':
           description: Invalid input
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Invalid input"
-                  data:
-                    type: object
-                    
-
-  /therapists:
-    post:
-      tags:
-        - Therapist Management
-      summary: Create a new therapist account
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                password:
-                  type: string
-                name:
-                  type: string
-                phone:
-                  type: string
-                description:
-                  type: string
-              required:
-                - email
-                - password
-      responses:
-        '200':
-          description: Therapist account created successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Therapist added successfully"
-                  data:
-                    type: object
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
                     properties:
-                      email:
-                        type: string
-                      name:
-                        type: string
-                      description:
-                        type: string
-                      therapistId:
-                        type: string
-        '400':
-          description: Invalid input
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Invalid input"
-                  data:
-                    type: object
-              
-
-  /clients/{clientId}/therapists:
-    get:
-      tags:
-        - Client Management
-      summary: View list of therapists mapped to the client
-      parameters:
-        - name: clientId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: List of therapists retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Therapists retrieved successfully"
-                  data:
-                    type: object
-                    properties:
-                      therapistIds:
-                        type: array
-                        items:
-                          type: string
-                        description: List of therapist IDs mapped to the client
-        '400':
-          description: Some error occurred
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Error retrieving therapists"
-                  data:
-                    type: object
-                    
-
-    post:
-      tags:
-        - Client Management
-      summary: Map a therapist to the client
-      parameters:
-        - name: clientId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                therapistId:
-                  type: string
-              required:
-                - therapistId
-      responses:
-        '200':
-          description: Therapist mapped successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Therapist mapped successfully"
-                  data:
-                    type: object
-                    properties:
-                      therapistIds:
-                        type: array
-                        items:
-                          type: string
-                        description: List of therapist IDs mapped to the client
-        '400':
-          description: Invalid input
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Invalid input"
-                  data:
-                    type: object
-             
-
-
-  /clients/{clientId}/therapists/{therapistId}:
-    patch:
-      tags:
-        - Client Management
-      summary: Update journal access for a therapist
-      parameters:
-        - name: clientId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: therapistId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                hasJournalAccess:
-                  type: boolean
-              required:
-                - hasJournalAccess
-      responses:
-        '200':
-          description: Journal access updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Journal access updated successfully"
-                  data:
-                    type: object
-                    properties:
-                      clientId:
-                        type: string
-                        example: "client123"
-                      therapistId:
-                        type: string
-                        example: "therapist456"
-                      hasJournalAccess:
+                      status:
                         type: boolean
-                        example: true
-        '400':
-          description: Invalid input
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Invalid input"
-                  data:
-                    type: object
-                   
-
-
-    delete:
-      tags:
-        - Client Management
-      summary: Removes the journal access for the Therapist
-      parameters:
-        - name: clientId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: therapistId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Therapist Journal access removed
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Therapist Journal access removed"
-                  data:
-                    type: object
-                    
-
-        '400':
-          description: Therapist or client not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Therapist or client not found"
-                  data:
-                    type: object
+                        example: false
+                      message :
+                        type: string
+                        example: Error occured
   /clients/{clientId}:
-    delete:
-      tags:
-        - Client Management
-      summary: Remove a therapist mapping from the client
-      parameters:
-        - name: clientId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: therapistId
-          in: query
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Therapist mapping removed successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Therapist mapping removed successfully"
-                  data:
-                    type: object
-                    properties:
-                      remainingTherapists:
-                        type: array
-                        items:
-                          type: string
-                        example:
-                          - "therapist123"
-                          - "therapist456"
-        '400':
-          description: Invalid input
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Invalid input"
-        '404':
-          description: Therapist mapping not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Therapist mapping not found"
    
     get:
       tags:
@@ -484,50 +93,708 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Client information retrieved successfully"
-                  data:
-                    type: object
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
                     properties:
-                      email:
-                        type: string
-                        example: "client@example.com"
-                      name:
-                        type: string
-                        example: "John Doe"
-                      clientId:
-                        type: string
-                        example: "client123"
-                      timeStampCreated:
-                        type: integer
-                        example: 1627900987
-                      password:
-                        type: string
-                        example: "client_password"
-                required:
-                  - status
-                  - message
-                  - data
+                      data:
+                          $ref: '#/components/schemas/ClientResponse'
+              
         '400':
           description: Invalid input
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Invalid input"
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message :
+                        type: string
+                        example: Error occured
+    delete:
+      tags:
+        - Client Management
+      summary: Remove a client
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "12345"
+            description: Unique identifier for the client to be removed
+      responses:
+        '200':
+          description: Client removed successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          clientId:
+                            type: string
+                            example: "12345"
+                            description: Identifier of the removed client
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message:
+                        type: string
+                        example: "Invalid client ID or client cannot be removed"
+    put:
+      tags:
+        - Client Management
+      summary: Update client details
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "client123"
+            description: Unique identifier of the client
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/UpdateRequest'   
+                - type: object
+                  properties:
+                    entity:
+                      $ref: '#/components/schemas/ClientResponse'  
+      responses:
+        '200':
+          description: Client details updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'  
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ClientResponse'  
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'  
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message:
+                        type: string
+                        example: "Invalid input or update operation failed"
+  /clients/{clientId}/therapists:
+    get:
+      tags:
+        - Client Management
+      summary: Retrieve the list of therapists associated with a client
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "12345"
+            description: Unique identifier for the client
+      responses:
+        '200':
+          description: List of therapists retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TherapistResponse'
+        '400':
+          description: Bad Request - Invalid Client ID
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message :
+                        type: string
+                        example: Error occured
+  
+    post:
+      tags:
+        - Client Management
+      summary: Associate a therapist with a client
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "12345"
+            description: Unique identifier for the client
+        - name: therapistId
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "12345"
+            description: Unique identifier for the therapist
+      responses:
+        '200':
+          description: Therapist associated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      data:
+                          $ref: '#/components/schemas/TherapistResponse'
+        '400':
+          description: Bad Request - Invalid input
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message :
+                        type: string
+                        example: Error occured
+    delete:
+      tags:
+        - Client Management
+      summary: Remove a therapist mapping from the client
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: therapistId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Therapist mapping removed successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TherapistResponse'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message :
+                        type: string
+                        example: Error occured
+  /clients/{clientId}/therapists/{therapistId}:
+    patch:
+      tags:
+        - Journals
+      summary: Update journal access for a therapist
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: therapistId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: hasJournalAccess
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - true
+              - false
+      responses:
+        '200':
+          description: Journal access updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message :
+                        type: string
+                        example: Error occured
+                   
+  /clients/{clientId}/journals:
+    post:
+      tags:
+        - Journals
+      summary: Add a new emotion record to the journal
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                  - $ref: '#/components/schemas/JournalRequest'
+      responses:
+        '200':
+          description: Emotion record added successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      data:
+                          $ref: '#/components/schemas/JournalResponse'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message :
+                        type: string
+                        example: Error occured
+    get:
+      tags:
+        - Journals
+      summary: Retrieve journal details for a client
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Journal details retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/JournalResponse'
+                
+        '400':
+          description: Invalid clientId
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message :
+                        type: string
+                        example: Error occured
+      
+                      
+                    
+  /clients/{clientId}/journal-access/{therapistId}/status:
+    patch:
+      tags:
+        - Journals
+      summary: Approve or reject therapist's request for journal access
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: therapistId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: action
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - approve
+              - reject
 
+      responses:
+        '200':
+          description: Action processed successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+ 
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message :
+                        type: string
+                        example: Error occured
+  /clients/{clientId}/journal-access/request:
+    post:
+      tags:
+        - Journals
+      summary: Request therapist access to client emotions journal
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: therapistId
+          in: query
+          required: true
+          schema:
+            type: string
+
+      responses:
+        '200':
+          description: Journal access request sent successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message :
+                        type: string
+                        example: Error occured
+  /clients/{clientId}/therapy/{therapistId}/status:
+    patch:
+      tags:
+        - Client Management
+      summary: Approve or reject therapist’s mapping request to client account
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: therapistId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: action
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - approve
+              - reject
+      responses:
+        '200':
+          description: Action processed successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      data:
+                          $ref: '#/components/schemas/TherapistResponse'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message :
+                        type: string
+                        example: Error occured
+       
+  /therapists:
+    post:
+      tags:
+        - Therapist Management
+      summary: Create a new therapist account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/TherapistRequest'
+      responses:
+        '200':
+          description: Therapist account created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TherapistResponse'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message :
+                        type: string
+                        example: Error occured
+  /therapists/{therapistId}:
+    get:
+      tags:
+        - Therapist Management
+      summary: Retrieve therapist details
+      parameters:
+        - name: therapistId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "therapist123"
+            description: Unique identifier of the therapist
+      responses:
+        '200':
+          description: Therapist details retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TherapistResponse'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message:
+                        type: string
+                        example: "Invalid therapist ID or therapist not found"
+  
+    put:
+      tags:
+        - Therapist Management
+      summary: Update therapist details
+      parameters:
+        - name: therapistId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "therapist123"
+            description: Unique identifier of the therapist
+      requestBody:
+        required: true
+        content:
+          application/json:
+           schema:
+                allOf:
+                  - $ref: '#/components/schemas/UpdateRequest'
+                  - type: object
+                    properties:
+                      entity:
+                        $ref: '#/components/schemas/TherapistResponse'
+
+      responses:
+        '200':
+          description: Therapist details updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TherapistResponse'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message:
+                        type: string
+                        example: "Invalid input or update operation failed"
+  
+    delete:
+      tags:
+        - Therapist Management
+      summary: Remove a therapist account
+      parameters:
+        - name: therapistId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "therapist123"
+            description: Unique identifier of the therapist to be removed
+      responses:
+        '200':
+          description: Therapist account removed successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          therapistId:
+                            type: string
+                            example: "therapist123"
+                            description: Identifier of the removed therapist
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message:
+                        type: string
+                        example: "Invalid therapist ID or therapist cannot be removed"
 
 
   /therapists/{therapistId}/clients:
@@ -547,43 +814,31 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "List of clients retrieved successfully"
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        clientId:
-                          type: string
-                          example: "client123"
-                        name:
-                          type: string
-                          example: "John Doe"
-                        email:
-                          type: string
-                          example: "john.doe@example.com"
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TherapistResponse'
+
         '400':
           description: Invalid input
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Invalid input"
-                  data:
-                    type: object
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message :
+                        type: string
+                        example: Error occured
+
                    
 
     # post:
@@ -667,439 +922,239 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Client mapping removed successfully"
-                  data:
-                    type: object
-                    properties:
-                      remainingClients:
-                        type: array
-                        items:
-                          type: string
-                        example:
-                          - "client123"
-                          - "client789"
+                allOf:
+                  - $ref: '#/components/schemas/Response'
         '400':
           description: Invalid input
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Invalid input"
-        '404':
-          description: Client mapping not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Client mapping not found"
-    
-                   
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message :
+                        type: string
+                        example: Error occured
+            
 
-  /clients/{clientId}/journals:
+  /therapists/{therapistId}/sessions:
     post:
       tags:
-        - Journals
-      summary: Add a new emotion record to the journal
+        - Sessions
+      summary: Create or save a session
       parameters:
-        - name: clientId
+        - name: therapistId
           in: path
           required: true
           schema:
             type: string
+          description: ID of the therapist creating the session
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                emotion:
-                  type: string
-                  enum:
-                    - Happiness
-                    - Caring
-                    - Depression
-                    - Inadequate
-                    - Fear
-                    - Confusion
-                    - Hurt
-                    - Anger
-                    - Loneliness
-                    - Remorse
-                feeling:
-                  type: string
-                  description: Specific feeling related to the emotion
-                  example: Joyful
-                intensity:
-                  type: string
-                  enum:
-                    - Strong
-                    - Medium
-                    - Light
-                  example: Medium
-                notes:
-                  type: string
-                  description: Optional notes for the emotion record
-                  example: Had a productive day at work.
-              required:
-                - emotion
-                - feeling
-                - intensity
-                - timestamp
+                allOf:
+                  - $ref: '#/components/schemas/SessionRequest'
       responses:
         '200':
-          description: Emotion record added successfully
+          description: Session saved successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: Emotion record added successfully
-                  data:
-                    type: object
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
                     properties:
-                      emotion:
-                        type: string
-                        example: Happiness
-                      feeling:
-                        type: string
-                        example: Joyful
-                      intensity:
-                        type: string
-                        example: Medium
-                      timestamp:
-                        type: string
-                        format: date-time
-                        example: "2025-01-06T15:00:00Z"
-                      notes:
-                        type: string
-                        example: Had a productive day at work.
+                      data:
+                          $ref: '#/components/schemas/SessionResponse'
         '400':
           description: Invalid input
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: Invalid input
-                  data:
-                    type: object
+                allOf:
+                    - $ref: '#/components/schemas/Response'
+                    - type: object
+                      properties:
+                        status:
+                          type: boolean
+                          example: false
+                        message :
+                          type: string
+                          example: Error occured
+
+  /therapists/{therapistId}/sessions/{sessionId}:
+    patch:
+      tags:
+        - Sessions
+      summary: Modify session details
+      parameters:
+        - name: therapistId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the therapist
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique ID of the session to be updated
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                allOf:
+                  - $ref: '#/components/schemas/UpdateRequest'
+                  - type: object
+                    properties:
+                      entity:
+                        $ref: '#/components/schemas/SessionRequest'
+         
+      responses:
+        '200':
+          description: Session updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/SessionResponse'
+       
     get:
       tags:
-        - Journals
-      summary: Retrieve journal details for a client
+        - Sessions
+      summary: Get session details
       parameters:
-        - name: clientId
+        - name: therapistId
           in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the therapist
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique ID of the session
+      responses:
+        '200':
+          description: Session details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionResponse'
+        '400':
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message:
+                        type: string
+                        example: "Error occured while fetching"
+    delete:
+      tags:
+        - Sessions
+      summary: Delete session details
+      parameters:
+        - name: therapistId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the therapist
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique ID of the session to be deleted
+      responses:
+        '200':
+          description: Session deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+        '400':
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message:
+                        type: string
+                        example: "Error occured while fetching"
+
+  /therapists/{therapistId}/clients/request:
+    post:
+      tags:
+        - Therapist Management
+      summary: Therapist requests to map a client to their therapy account
+      parameters:
+        - name: therapistId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: ClientId
+          in: query
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: Journal details retrieved successfully
+          description: Client mapping request submitted successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: Journal details retrieved successfully
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        journalId:
-                          type: string
-                          example: "journal123"
-                        emotion:
-                          type: string
-                          example: Happiness
-                        feeling:
-                          type: string
-                          example: Joyful
-                        intensity:
-                          type: string
-                          example: Medium
-                        timestamp:
-                          type: string
-                          format: date-time
-                          example: "2025-01-06T15:00:00Z"
-                        notes:
-                          type: string
-                          example: Had a productive day at work.
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TherapistResponse'
+
+
         '400':
-          description: Invalid clientId
+          description: Invalid input
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: Invalid clientId
-        '404':
-          description: Journals not found for the client
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: Journals not found for the client
-                      
-
-  # /clients/{clientId}/therapists/{therapistId}/messages:
-  #   get:
-  #     tags:
-  #       - Messaging
-  #     summary: View message history with a therapist
-  #     parameters:
-  #       - name: clientId
-  #         in: path
-  #         required: true
-  #         schema:
-  #           type: string
-  #       - name: therapistId
-  #         in: path
-  #         required: true
-  #         schema:
-  #           type: string
-  #     responses:
-  #       '200':
-  #         description: Message history retrieved successfully
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: object
-  #               properties:
-  #                 status:
-  #                   type: boolean
-  #                   example: true
-  #                 message:
-  #                   type: string
-  #                   example: "Message history retrieved successfully"
-  #                 data:
-  #                   type: array
-  #                   items:
-  #                     type: object
-  #                     properties:
-  #                       messageId:
-  #                         type: string
-  #                         example: "message789"
-  #                       sender:
-  #                         type: string
-  #                         example: "client123"
-  #                       content:
-  #                         type: string
-  #                         example: "How are you feeling today?"
-  #                       timestamp:
-  #                         type: string
-  #                         format: date-time
-  #                         example: "2025-01-06T08:00:00Z"
-  #       '400':
-  #         description: Invalid input
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: object
-  #               properties:
-  #                 status:
-  #                   type: boolean
-  #                   example: false
-  #                 message:
-  #                   type: string
-  #                   example: "Invalid input"
-  #                 data:
-  #                   type: object
-               
-
-  #   post:
-  #     tags:
-  #       - Messaging
-  #     summary: Send a message to a therapist
-  #     parameters:
-  #       - name: clientId
-  #         in: path
-  #         required: true
-  #         schema:
-  #           type: string
-  #       - name: therapistId
-  #         in: path
-  #         required: true
-  #         schema:
-  #           type: string
-  #     requestBody:
-  #       required: true
-  #       content:
-  #         application/json:
-  #           schema:
-  #             type: object
-  #             properties:
-  #               content:
-  #                 type: string
-  #             required:
-  #               - content
-  #     responses:
-  #       '200':
-  #         description: Message sent successfully
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: object
-  #               properties:
-  #                 status:
-  #                   type: boolean
-  #                   example: true
-  #                 message:
-  #                   type: string
-  #                   example: "Message sent successfully"
-  #                 data:
-  #                   type: object
-  #                   properties:
-  #                     messageId:
-  #                       type: string
-  #                       example: "message789"
-  #                     sender:
-  #                       type: string
-  #                       example: "client123"
-  #                     content:
-  #                       type: string
-  #                       example: "How are you feeling today?"
-  #                     timestamp:
-  #                       type: string
-  #                       format: date-time
-  #                       example: "2025-01-06T08:00:00Z"
-  #       '400':
-  #         description: Invalid input
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: object
-  #               properties:
-  #                 status:
-  #                   type: boolean
-  #                   example: false
-  #                 message:
-  #                   type: string
-  #                   example: "Invalid input"
-  #                 data:
-  #                   type: object
-                 
-  # /therapists/{therapistId}/clients/{clientId}/messages:
-  #   post:
-  #     tags:
-  #       - Messaging
-  #     summary: Send a message to a client
-  #     parameters:
-  #       - name: therapistId
-  #         in: path
-  #         required: true
-  #         schema:
-  #           type: string
-  #       - name: clientId
-  #         in: path
-  #         required: true
-  #         schema:
-  #           type: string
-  #     requestBody:
-  #       required: true
-  #       content:
-  #         application/json:
-  #           schema:
-  #             type: object
-  #             properties:
-  #               content:
-  #                 type: string
-  #             required:
-  #               - content
-  #     responses:
-  #       '200':
-  #         description: Message sent successfully
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: object
-  #               properties:
-  #                 status:
-  #                   type: boolean
-  #                   example: true
-  #                 message:
-  #                   type: string
-  #                   example: "Message sent successfully"
-  #                 data:
-  #                   type: object
-  #                   properties:
-  #                     messageId:
-  #                       type: string
-  #                       example: "message123"
-  #                     sender:
-  #                       type: string
-  #                       example: "therapist456"
-  #                     content:
-  #                       type: string
-  #                       example: "I hope you're feeling better today."
-  #                     timestamp:
-  #                       type: string
-  #                       format: date-time
-  #                       example: "2025-01-06T09:30:00Z"
-  #       '400':
-  #         description: Invalid input
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: object
-  #               properties:
-  #                 status:
-  #                   type: boolean
-  #                   example: false
-  #                 message:
-  #                   type: string
-  #                   example: "Invalid input"
-  #                 data:
-  #                   type: object
-      
-                  
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message :
+                        type: string
+                        example: Error occured
   /search/notes-and-journals:
     get:
       tags:
@@ -1145,61 +1200,40 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Search successful."
-                  data:
-                    type: object
+                allOf:
+                  - $ref: '#/components/schemas/Response' 
+                  - type: object
                     properties:
-                      results:
+                      data:
                         type: object
                         properties:
-                          journal:
-                            type: array
-                            items:
-                              $ref: "#/components/schemas/EmotionJournalEntry"
-                          notes:
-                            type: array
-                            items:
-                              $ref: "#/components/schemas/TherapistNote"
+                          results:
+                            type: object
+                            properties:
+                              journal:
+                                type: array
+                                items:
+                                  $ref: '#/components/schemas/JournalResponse'
+                              notes:
+                                type: array
+                                items:
+                                  $ref: '#/components/schemas/SessionResponse'
+                          
         '400':
           description: "Bad Request. Missing required parameters."
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Missing required parameters."
-                  data:
-                    type: object
-                    
-        '404':
-          description: "No results found for the given search parameters."
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "No results found."
-                  data:
-                    type: object
-
-
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message :
+                        type: string
+                        example: Error occured
   /search/therapists:
     get:
       tags:
@@ -1219,21 +1253,14 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Search successful."
-                  data:
-                    type: object
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
                     properties:
-                      therapists:
+                      data:
                         type: array
                         items:
-                          type: string
+                          $ref: '#/components/schemas/TherapistResponse'
                         
                        
                          
@@ -1242,466 +1269,17 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Missing required parameters."
-                  data:
-                    type: object
-        '404':
-          description: "No therapists found."
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "No therapists found."
-                  data:
-                    type: object
-  /therapists/{therapistId}/sessions:
-    post:
-      tags:
-        - Sessions
-      summary: Create or save a session
-      parameters:
-        - name: therapistId
-          in: path
-          required: true
-          schema:
-            type: string
-          description: ID of the therapist creating the session
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                sessionId:
-                  type: string
-                  description: Unique ID for the session
-                clientId:
-                  type: string
-                  description: ID of the client the session is associated with
-                privateNotes:
-                  type: string
-                  description: Notes visible only to the therapist
-                sharedNotes:
-                  type: string
-                  description: Notes shared with the client
-                date:
-                  type: string
-                  format: date-time
-                  description: Scheduled date and time for the session
-              required:
-                - sessionId
-                - clientId
-                - date
-      responses:
-        '201':
-          description: Session saved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Session saved successfully"
-                  sessionId:
-                    type: string
-                    example: "session123"
-        '400':
-          description: Invalid input
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Invalid input"
-  /clients/{clientId}/journal-access/{therapistId}/status:
-    patch:
-      tags:
-        - Journals
-      summary: Approve or reject therapist's request for journal access
-      parameters:
-        - name: clientId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: therapistId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                action:
-                  type: string
-                  enum:
-                    - approve
-                    - reject
-                  description: Action to approve or reject access
-              required:
-                - action
-      responses:
-        '200':
-          description: Action processed successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Therapist's access to journal updated successfully"
-                  data:
-                    type: object
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
                     properties:
-                      clientId:
+                      status:
+                        type: boolean
+                        example: false
+                      message :
                         type: string
-                        example: "client123"
-                      therapistId:
-                        type: string
-                        example: "therapist456"
-                      accessStatus:
-                        type: string
-                        enum:
-                          - approved
-                          - rejected
-                        example: "approved"
-        '400':
-          description: Invalid input
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Invalid input"
-        '404':
-          description: Therapist not found or request not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Request or therapist not found"
-
-  /therapists/{therapistId}/sessions/{sessionId}:
-    patch:
-      tags:
-        - Sessions
-      summary: Modify session details
-      parameters:
-        - name: therapistId
-          in: path
-          required: true
-          schema:
-            type: string
-          description: ID of the therapist
-        - name: sessionId
-          in: path
-          required: true
-          schema:
-            type: string
-          description: Unique ID of the session to be updated
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                privateNotes:
-                  type: string
-                  description: Updated private notes visible only to the therapist
-                sharedNotes:
-                  type: string
-                  description: Updated shared notes for the client
-                date:
-                  type: string
-                  format: date-time
-                  description: Updated date and time for the session
-              required:
-                - date
-      responses:
-        '200':
-          description: Session updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Session updated successfully"
-        '400':
-          description: Invalid input
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Invalid input"
-        '404':
-          description: Session not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Session not found"
-  /auth/login:
-    post:
-      tags:
-        - Authentication
-      summary: Authenticate user and get JWT token
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - email
-                - password
-                - role
-              properties:
-                email:
-                  type: string
-                  format: email
-                password:
-                  type: string
-                  format: password
-                role:
-                  type: string
-                  enum: [client, therapist]
-      responses:
-        '200':
-          description: Login successful
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Login successful"
-                  data:
-                    type: object
-                    properties:
-                      token:
-                        type: string
-                        example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                      expiresIn:
-                        type: integer
-                        example: 3600
-        '401':
-          description: Invalid credentials
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Invalid email or password"
-                  data:
-                    type: object
-                    example: {}
-  /message:
-    post:
-      tags:
-        - Messaging
-      summary: Send a message 
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                message:
-                  type: string
-                role:
-                  type: string
-                  enum:
-                    - client
-                    - therapist
-                receiverId:
-                  type: string
-                senderId:
-                  type: string
-              required:
-                - message
-                - role
-                - receiverId
-                - senderId
-
-      responses:
-        '200':
-          description: Message sent successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Message sent successfully"
-                  data:
-                    type: object
-                    properties:
-                      messageId:
-                        type: string
-                        example: "message789"
-                      sender:
-                        type: string
-                        example: "client123"
-                      content:
-                        type: string
-                        example: "How are you feeling today?"
-                      timestamp:
-                        type: string
-                        format: date-time
-                        example: "2025-01-06T08:00:00Z"
-        '400':
-          description: Invalid input
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Invalid input"
-                  data:
-                    type: object
-  /message/history:
-    get:
-      tags:
-        - Messaging
-      summary: Fetch message exchanges
-      parameters:
-        - name: participant1Id
-          in: query
-          required: true
-          schema:
-            type: string
-          description: ID of the first participant (client or therapist)
-        - name: participant2Id
-          in: query
-          required: true
-          schema:
-            type: string
-          description: ID of the second participant (client or therapist)
-      responses:
-        '200':
-          description: Conversation history fetched successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "History fetched successfully"
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        messageId:
-                          type: string
-                          example: "message789"
-                        senderId:
-                          type: string
-                          example: "client123"
-                        receiverId:
-                          type: string
-                          example: "therapist456"
-                        content:
-                          type: string
-                          example: "How are you feeling today?"
-                        timestamp:
-                          type: string
-                          format: date-time
-                          example: "2025-01-06T08:00:00Z"
-        '400':
-          description: Invalid input
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Invalid input"
-        '404':
-          description: No messages found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "No messages found"
+                        example: Error occured
+        
   /search/customers:
     get:
       tags:
@@ -1732,343 +1310,173 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Search results retrieved successfully"
-                  data:
-                    type: object
+                allOf:
+                  - $ref: '#/components/schemas/Response' 
+                  - type: object
                     properties:
-                      customers:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            clientId:
-                              type: string
-                              example: "client123"
-                            name:
-                              type: string
-                              example: "John Doe"
-                            email:
-                              type: string
-                              example: "john.doe@example.com"
-                      notes:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            sessionId:
-                              type: string
-                              example: "session456"
-                            therapistId:
-                              type: string
-                              example: "therapist789"
-                            sharedNotes:
-                              type: string
-                              example: "Discussed progress on anxiety management techniques."
-                            privateNotes:
-                              type: string
-                              example: "Patient has been showing marked improvement."
-                            timestamp:
-                              type: string
-                              format: date-time
-                              example: "2025-01-06T10:00:00Z"
-                      journals:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            journalId:
-                              type: string
-                              example: "journal789"
-                            clientId:
-                              type: string
-                              example: "client123"
-                            emotion:
-                              type: string
-                              example: "Happiness"
-                            feeling:
-                              type: string
-                              example: "Joyful"
-                            intensity:
-                              type: string
-                              example: "Medium"
-                            notes:
-                              type: string
-                              example: "Had a productive day."
-                            timestamp:
-                              type: string
-                              format: date-time
-                              example: "2025-01-06T15:00:00Z"
+                      data:
+                        type: object
+                        properties:
+                          results:
+                            type: object
+                            properties:
+                              journal:
+                                type: array
+                                items:
+                                  $ref: '#/components/schemas/JournalResponse'
+                              notes:
+                                type: array
+                                items:
+                                  $ref: '#/components/schemas/SessionResponse'
+                              client:
+                                $ref: '#/components/schemas/ClientResponse'
+                          
         '400':
           description: Invalid input
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Invalid input"
-  /clients/{clientId}/journal-access/request:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message :
+                        type: string
+                        example: Error occured
+ 
+ 
+       
+  /auth/login:
     post:
       tags:
-        - Journals
-      summary: Request therapist access to client emotions journal
-      parameters:
-        - name: clientId
-          in: path
-          required: true
-          schema:
-            type: string
+        - Authentication
+      summary: Authenticate user and get JWT token
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                therapistId:
-                  type: string
-                  description: ID of the therapist requesting access to the emotions journal
-              required:
-                - therapistId
+                allOf:
+                  - $ref: '#/components/schemas/LoginRequest'
+             
       responses:
         '200':
-          description: Journal access request sent successfully
+          description: Login successful
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Journal access request sent successfully"
-        '400':
-          description: Invalid input
+                allOf:
+                  - $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid credentials
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Invalid input"
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message :
+                        type: string
+                        example: Error occured
 
-
-  /therapists/{therapistId}/clients/map:
+  /message:
     post:
       tags:
-        - Therapist Management
-      summary: Therapist requests to map a client to their therapy account
-      parameters:
-        - name: therapistId
-          in: path
-          required: true
-          schema:
-            type: string
+        - Messaging
+      summary: Send a message 
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                clientId:
-                  type: string
-                  description: ID of the client to be mapped to the therapist
-              required:
-                - clientId
+              allOf:
+                  - $ref: '#/components/schemas/Response'
+
+
       responses:
         '200':
-          description: Client mapping request submitted successfully
+          description: Message sent successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Client mapping request submitted successfully"
-        '400':
-          description: Invalid input
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Invalid input"
-  /clients/{clientId}/therapy/{therapistId}/status:
-    patch:
-      tags:
-        - Client Management
-      summary: Approve or reject therapist’s mapping request to client account
-      parameters:
-        - name: clientId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: therapistId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                action:
-                  type: string
-                  enum:
-                    - approve
-                    - reject
-                  description: Action to approve or reject the mapping request
-              required:
-                - action
-      responses:
-        '200':
-          description: Action processed successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Therapist mapping updated successfully"
-                  data:
-                    type: object
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
                     properties:
-                      clientId:
-                        type: string
-                        example: "client123"
-                      therapistId:
-                        type: string
-                        example: "therapist456"
-                      mappingStatus:
-                        type: string
-                        enum:
-                          - approved
-                          - rejected
-                        example: "approved"
+                      data:
+                          $ref: '#/components/schemas/MessageResponse'
         '400':
           description: Invalid input
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Invalid input"
-        '404':
-          description: Therapist or client not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Therapist or client not found"
-  /therapists/{therapistId}:
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message :
+                        type: string
+                        example: Error occured
+  /message/history:
     get:
       tags:
-        - Therapist Management
-      summary: Get therapist information
+        - Messaging
+      summary: Fetch message exchanges
       parameters:
-        - name: therapistId
-          in: path
+        - name: participant1Id
+          in: query
           required: true
           schema:
             type: string
-        - name: fieldsToExclude
+          description: ID of the first participant (client or therapist)
+        - name: participant2Id
           in: query
-          required: false
+          required: true
           schema:
             type: string
-            description: Comma-separated list of fields to exclude from the response (e.g., "email,description")
+          description: ID of the second participant (client or therapist)
       responses:
         '200':
-          description: Therapist information retrieved successfully
+          description: Conversation history fetched successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Therapist information retrieved successfully"
-                  data:
-                    type: object
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
                     properties:
-                      email:
-                        type: string
-                        example: "therapist@example.com"
-                      name:
-                        type: string
-                        example: "Dr. John Smith"
-                      description:
-                        type: string
-                        example: "Experienced therapist specializing in cognitive therapy."
-                      therapistId:
-                        type: string
-                        example: "therapist123"
-                required:
-                  - status
-                  - message
-                  - data
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/MessageResponse'
         '400':
           description: Invalid input
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Invalid input"
+                allOf:
+                  - $ref: '#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      status:
+                        type: boolean
+                        example: false
+                      message :
+                        type: string
+                        example: Error occured
+
+  
+ 
   /appointments/request:
     post:
       summary: Request an appointment in an available slot
@@ -2080,62 +1488,22 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                therapistId:
-                  type: string
-                  description: The ID of the therapist the appointment is being requested with.
-                  example: "therapist123"
-                slotId:
-                  type: string
-                  description: The ID of the available slot being requested.
-                  example: "slot456"
-                clientId:
-                  type: string
-                  description: The id of the client
-                message:
-                  type: string
-                  description: Optional message from the client to the therapist.
-                  example: "Looking forward to discussing progress."
+              allOf:
+                - $ref: '#/components/schemas/AppointmentRequest'
       responses:
         '200':
           description: Appointment requested successfully
           content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  appointmentId:
-                    type: string
-                    description: The ID of the requested appointment.
-                    example: "appointment789"
-                  status:
-                    type: string
-                    description: The status of the appointment request.
-                    example: "pending"
-                  therapistId:
-                    type: string
-                    description: The ID of the therapist.
-                    example: "therapist123"
-                  clientId:
-                    type: string
-                    description: The id of the client
-                  slotId:
-                    type: string
-                    description: The ID of the requested slot.
-                    example: "slot456"
-                  requestedAt:
-                    type: string
-                    format: date-time
-                    description: The timestamp when the appointment was requested.
-                    example: "2025-01-07T09:00:00Z"
+              application/json:
+                  schema:
+                    $ref: '#/components/schemas/AppointmentResponse'
         '400':
           description: Invalid request data
         '404':
           description: Therapist or slot not found
 
   /appointments/{appointmentId}/accept:
-    post:
+    put:
       summary: Accept an appointment request
       description: Allows a therapist to accept a pending appointment request from a client.
       tags:
@@ -2148,46 +1516,13 @@ paths:
           schema:
             type: string
             example: "appointment789"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                confirmationMessage:
-                  type: string
-                  description: Optional message to the client upon accepting the appointment.
-                  example: "Your appointment is confirmed."
       responses:
         '200':
           description: Appointment accepted successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  appointmentId:
-                    type: string
-                    description: The ID of the accepted appointment.
-                    example: "appointment789"
-                  status:
-                    type: string
-                    description: The updated status of the appointment.
-                    example: "accepted"
-                  therapistId:
-                    type: string
-                    description: The ID of the therapist accepting the appointment.
-                    example: "therapist123"
-                  clientId:
-                    type: string
-                    description: The ID of the client who requested the appointment.
-                    example: "client456"
-                  scheduledTime:
-                    type: string
-                    format: date-time
-                    description: The scheduled time of the appointment.
-                    example: "2025-01-07T14:00:00Z"
+                  $ref: '#/components/schemas/AppointmentResponse'
         '400':
           description: Invalid request data
         '404':
@@ -2197,27 +1532,400 @@ paths:
 
 components:
   schemas:
-    EmotionJournalEntry:
+    
+    Response:
       type: object
       properties:
-        timestamp:
+        status:
+          type: boolean
+          description: Indicates whether the operation was successful.
+          example: true
+        message:
+          type: string
+          description: A human-readable message providing additional details about the operation.
+          example: "Operation completed successfully."
+        data:
+          type: object
+          description: Response-specific data
+          nullable: true
+          example: {}
+    ClientResponse:
+      type: object
+      properties:
+        clientId:
+          type: string
+          description: A unique identifier for the client.
+          example: "client123"
+        name:
+          type: string
+          description: The full name of the client.
+          example: "John Doe"
+        email:
+          type: string
+          format: email
+          description: The email address of the client.
+          example: "client@example.com"
+        phone:
+          type: number
+          description: The client's phone number.
+          example: 1234567890
+        address:
+          type: string
+          description: The client's address.
+          example: "123 Wellness Street, Health City"
+        dateOfBirth:
+          type: string
+          format: date
+          description: The client's date of birth.
+          example: "1990-05-15"
+    TherapistResponse:
+      type: object
+      properties:
+        therapist_id:
+          type: integer
+          example: 1
+        email:
+          type: string
+          example: therapist@example.com
+        first_name:
+          type: string
+          example: Jane
+        last_name:
+          type: string
+          example: Smith
+        specialization:
+          type: string
+          example: Cognitive Behavioral Therapy
+        created_at:
           type: string
           format: date-time
-          example: "2025-01-06T09:30:00Z"
+          example: '2025-01-13T12:34:56Z'
+    AppointmentRequest:
+      type: object
+      properties:
+        therapistId:
+          type: string
+          example: "therapist1234"
+        slotId:
+          type: string
+          example: "slot456"
+        clientId:
+          type: string
+          example: "string"
+        message:
+          type: string
+          example: "Looking forward to discussing progress."
+      required:
+        - therapistId
+        - slotId
+        - clientId
+        - message
+    AppointmentResponse:
+      type: object
+      properties:
+        appointmentId:
+          type: string
+          example: "appointment789"
+        status:
+          type: string
+          example: "pending"
+        therapistId:
+          type: string
+          example: "therapist123"
+        clientId:
+          type: string
+          example: "string"
+        slotId:
+          type: string
+          example: "slot456"
+        requestedAt:
+          type: string
+          format: date-time
+          example: "2025-01-07T09:00:00Z"
+      required:
+        - appointmentId
+        - status
+        - therapistId
+        - clientId
+        - slotId
+        - requestedAt
+    JournalResponse:
+      type: object
+      properties:
+        journalId:
+          type: string
+          example: "journal789"
+        clientId:
+          type: string
+          example: "client123"
         emotion:
           type: string
-          example: "Sad"
+          example: "Happiness"
+        feeling:
+          type: string
+          example: "Joyful"
         intensity:
           type: string
-          example: "High"
-
-    TherapistNote:
-      type: object
-      properties:
+          example: "Medium"
+        notes:
+          type: string
+          example: "Had a productive day."
         timestamp:
           type: string
           format: date-time
-          example: "2025-01-06T09:30:00Z"
+          example: "2025-01-06T15:00:00Z"
+      required:
+        - journalId
+        - clientId
+        - emotion
+        - feeling
+        - intensity
+        - notes
+        - timestamp
+    JournalRequest:
+      type: object
+      properties:
+        clientId:
+          type: string
+          example: "client123"
+        emotion:
+          type: string
+          example: "Happiness"
+        feeling:
+          type: string
+          example: "Joyful"
+        intensity:
+          type: string
+          example: "Medium"
+        notes:
+          type: string
+          example: "Had a productive day."
+        timestamp:
+          type: string
+          format: date-time
+          example: "2025-01-06T15:00:00Z"
+      required:
+        - clientId
+        - emotion
+        - feeling
+        - intensity
+        - notes
+        - timestamp
+    ClientRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The full name of the client.
+          example: "John Doe"
+        email:
+          type: string
+          format: email
+          description: The email address of the client.
+          example: "client@example.com"
+        phone:
+          type: number
+          description: The client's phone number.
+          example: 1234567890
+        address:
+          type: string
+          description: The client's address.
+          example: "123 Wellness Street, Health City"
+        dateOfBirth:
+          type: string
+          format: date
+          description: The client's date of birth.
+          example: "1990-05-15"
+        password:
+          type: string
+          description: The client's password for account access.
+          example: "securepassword123"
+      required:
+        - name
+        - email
+        - phone
+        - address
+        - dateOfBirth
+        - password
+    TherapistRequest:
+        type: object
+        properties:
+          email:
+            type: string
+            format: email
+            example: therapist@example.com
+          first_name:
+            type: string
+            example: Jane
+          last_name:
+            type: string
+            example: Smith
+          specialization:
+            type: string
+            example: Cognitive Behavioral Therapy
+          password:
+            type: string
+            description: The therapist's password for account access.
+            example: "securepassword123"
+          created_at:
+            type: string
+            format: date-time
+            example: '2025-01-13T12:34:56Z'
+        required:
+          - email
+          - first_name
+          - last_name
+          - specialization
+          - password
+          - created_at
+    UpdateRequest:
+      type: object
+      properties:
+        entity:
+          type: object
+          description: Entity that needs to be updated. The type should be specified in the `requestBody`.
+        fieldsToUpdate:
+          type: array
+          description: List of fields that need to be updated. Only these fields will be updated in the database.
+          items:
+            type: string
+            example: ["name", "email"]
+    MessageRequest:
+      type: object
+      properties:
+        message_request_id:
+          type: integer
+          description: Unique ID for each message request
+        message:
+          type: string
+          description: The content of the message being sent
+        sender_id:
+          type: string
+          description: ID of the sender (client or therapist)
+        receiver_id:
+          type: string
+          description: ID of the receiver (client or therapist)
+        role:
+          type: string
+          enum: ['client', 'therapist']
+          description: The role of the sender (client or therapist)
+        request_timestamp:
+          type: string
+          format: date-time
+          description: Timestamp when the message request was sent
+
+    MessageResponse:
+      type: object
+      properties:
+        message_id:
+          type: string
+          description: Unique ID for each message response
+        sender:
+          type: string
+          description: The sender's ID (client or therapist)
+        receiver:
+          type: string
+          description: The receiver's ID (client or therapist)
         content:
           type: string
-          example: "The client is making progress in managing their emotions."
+          description: The content of the response message
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp when the response was 
+    SessionRequest:
+      type: object
+      properties:
+        therapistId:
+          type: string
+          description: The ID of the therapist for the session
+        clientId:
+          type: string
+          description: The ID of the client for the session
+        privateNotes:
+          type: string
+          description: Private notes visible only to the therapist
+        sharedNotes:
+          type: string
+          description: Shared notes visible to both the therapist and client
+        date:
+          type: string
+          format: date-time
+          description: The date and time of the session
+      required:
+        - therapistId
+        - date
+        - clientId
+
+    SessionResponse:
+      type: object
+      properties:
+        sessionId:
+          type: string
+          description: Unique ID of the session
+        clientId:
+          type: string
+          description: The ID of the client involved in the session
+        therapistId:
+          type: string
+          description: The ID of the therapist who conducted the session
+        privateNotes:
+          type: string
+          description: Private notes visible only to the therapist
+        sharedNotes:
+          type: string
+          description: Shared notes visible to both the therapist and client
+        date:
+          type: string
+          format: date-time
+          description: The date and time of the session
+      required:
+        - sessionId
+        - clientId
+        - therapistId
+        - date
+    LoginResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          description: The status of the response (e.g., success, error)
+          example: "success"
+        message:
+          type: string
+          description: A message providing more details about the login status
+          example: "Login successful"
+        data:
+          type: object
+          properties:
+            token:
+              type: string
+              description: The JWT token issued upon successful login
+              example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+      required:
+        - status
+        - message
+        - data
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: The email address of the user
+          example: "user@example.com"
+        password:
+          type: string
+          description: The password of the user
+          example: "string"
+        role:
+          type: string
+          enum:
+            - client
+            - therapist
+          description: The role of the user (either client or therapist)
+          example: "client"
+      required:
+        - email
+        - password
+        - role
