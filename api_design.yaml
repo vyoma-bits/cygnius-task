@@ -59,16 +59,13 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message :
-                        type: string
-                        example: Error occured
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
   /clients/{clientId}:
    
     get:
@@ -105,16 +102,13 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message :
-                        type: string
-                        example: Error occured
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
     delete:
       tags:
         - Client Management
@@ -149,16 +143,13 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message:
-                        type: string
-                        example: "Invalid client ID or client cannot be removed"
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
     put:
       tags:
         - Client Management
@@ -181,7 +172,7 @@ paths:
                 - type: object
                   properties:
                     entity:
-                      $ref: '#/components/schemas/ClientResponse'  
+                      $ref: '#/components/schemas/ClientRequest'  
       responses:
         '200':
           description: Client details updated successfully
@@ -193,22 +184,19 @@ paths:
                   - type: object
                     properties:
                       data:
-                        $ref: '#/components/schemas/ClientResponse'  
+                        $ref: '#/components/schemas/ClientResponse' 
         '400':
           description: Invalid input
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'  
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message:
-                        type: string
-                        example: "Invalid input or update operation failed"
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
   /clients/{clientId}/therapists:
     get:
       tags:
@@ -237,21 +225,18 @@ paths:
                         items:
                           $ref: '#/components/schemas/TherapistResponse'
         '400':
-          description: Bad Request - Invalid Client ID
+          description: Invalid input
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message :
-                        type: string
-                        example: Error occured
-  
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+    
     post:
       tags:
         - Client Management
@@ -284,20 +269,17 @@ paths:
                       data:
                           $ref: '#/components/schemas/TherapistResponse'
         '400':
-          description: Bad Request - Invalid input
+          description: Invalid input
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message :
-                        type: string
-                        example: Error occured
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
     delete:
       tags:
         - Client Management
@@ -332,18 +314,15 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message :
-                        type: string
-                        example: Error occured
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
   /clients/{clientId}/therapists/{therapistId}:
-    patch:
+    put:
       tags:
         - Journals
       summary: Update journal access for a therapist
@@ -362,7 +341,7 @@ paths:
           in: query
           required: true
           schema:
-            type: string
+            type: boolean
             enum:
               - true
               - false
@@ -379,17 +358,64 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message :
-                        type: string
-                        example: Error occured
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
                    
+
+
+    # delete:
+    #   tags:
+    #     - Client Management
+    #   summary: Removes the journal access for the Therapist
+    #   parameters:
+    #     - name: clientId
+    #       in: path
+    #       required: true
+    #       schema:
+    #         type: string
+    #     - name: therapistId
+    #       in: path
+    #       required: true
+    #       schema:
+    #         type: string
+    #   responses:
+    #     '200':
+    #       description: Therapist Journal access removed
+    #       content:
+    #         application/json:
+    #           schema:
+    #             type: object
+    #             properties:
+    #               status:
+    #                 type: boolean
+    #                 example: true
+    #               message:
+    #                 type: string
+    #                 example: "Therapist Journal access removed"
+    #               data:
+    #                 type: object
+                    
+
+    #     '400':
+    #       description: Therapist or client not found
+    #       content:
+    #         application/json:
+    #           schema:
+    #             type: object
+    #             properties:
+    #               status:
+    #                 type: boolean
+    #                 example: false
+    #               message:
+    #                 type: string
+    #                 example: "Therapist or client not found"
+    #               data:
+    #                 type: object
   /clients/{clientId}/journals:
     post:
       tags:
@@ -425,16 +451,13 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message :
-                        type: string
-                        example: Error occured
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
     get:
       tags:
         - Journals
@@ -461,164 +484,70 @@ paths:
                           $ref: '#/components/schemas/JournalResponse'
                 
         '400':
-          description: Invalid clientId
+          description: Invalid input
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message :
-                        type: string
-                        example: Error occured
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
       
                       
                     
-  /clients/{clientId}/journal-access/{therapistId}/status:
-    patch:
-      tags:
-        - Journals
-      summary: Approve or reject therapist's request for journal access
-      parameters:
-        - name: clientId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: therapistId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: action
-          in: query
-          required: true
-          schema:
-            type: string
-            enum:
-              - approve
-              - reject
+  # /clients/{clientId}/journal-access/{therapistId}/status:
+  #   patch:
+  #     tags:
+  #       - Journals
+  #     summary: Approve or reject therapist's request for journal access
+  #     parameters:
+  #       - name: clientId
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #       - name: therapistId
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #       - name: action
+  #         in: query
+  #         required: true
+  #         schema:
+  #           type: string
+  #           enum:
+  #             - approve
+  #             - reject
 
-      responses:
-        '200':
-          description: Action processed successfully
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
+  #     responses:
+  #       '200':
+  #         description: Action processed successfully
+  #         content:
+  #           application/json:
+  #             schema:
+  #               allOf:
+  #                 - $ref: '#/components/schemas/Response'
  
-        '400':
-          description: Invalid input
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message :
-                        type: string
-                        example: Error occured
-  /clients/{clientId}/journal-access/request:
-    post:
-      tags:
-        - Journals
-      summary: Request therapist access to client emotions journal
-      parameters:
-        - name: clientId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: therapistId
-          in: query
-          required: true
-          schema:
-            type: string
-
-      responses:
-        '200':
-          description: Journal access request sent successfully
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-        '400':
-          description: Invalid input
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message :
-                        type: string
-                        example: Error occured
-  /clients/{clientId}/therapy/{therapistId}/status:
-    patch:
-      tags:
-        - Client Management
-      summary: Approve or reject therapist’s mapping request to client account
-      parameters:
-        - name: clientId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: therapistId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: action
-          in: query
-          required: true
-          schema:
-            type: string
-            enum:
-              - approve
-              - reject
-      responses:
-        '200':
-          description: Action processed successfully
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      data:
-                          $ref: '#/components/schemas/TherapistResponse'
-        '400':
-          description: Invalid input
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message :
-                        type: string
-                        example: Error occured
-       
+  #       '400':
+  #         description: Invalid input
+  #         content:
+  #           application/json:
+  #             schema:
+  #               allOf:
+  #                 - $ref: '#/components/schemas/Response'
+  #                 - type: object
+  #                   properties:
+  #                     status:
+  #                       type: boolean
+  #                       example: false
+  #                     message :
+  #                       type: string
+  #                       example: Error occured
+  
   /therapists:
     post:
       tags:
@@ -648,16 +577,13 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message :
-                        type: string
-                        example: Error occured
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
   /therapists/{therapistId}:
     get:
       tags:
@@ -688,16 +614,13 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message:
-                        type: string
-                        example: "Invalid therapist ID or therapist not found"
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
   
     put:
       tags:
@@ -740,17 +663,14 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message:
-                        type: string
-                        example: "Invalid input or update operation failed"
-  
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+    
     delete:
       tags:
         - Therapist Management
@@ -785,16 +705,13 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message:
-                        type: string
-                        example: "Invalid therapist ID or therapist cannot be removed"
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
 
 
   /therapists/{therapistId}/clients:
@@ -828,17 +745,13 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message :
-                        type: string
-                        example: Error occured
-
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
                    
 
     # post:
@@ -929,18 +842,351 @@ paths:
           content:
             application/json:
               schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+
+  
+
+ 
+
+  # /clients/{clientId}/therapists/{therapistId}/messages:
+  #   get:
+  #     tags:
+  #       - Messaging
+  #     summary: View message history with a therapist
+  #     parameters:
+  #       - name: clientId
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #       - name: therapistId
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #     responses:
+  #       '200':
+  #         description: Message history retrieved successfully
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+  #                 status:
+  #                   type: boolean
+  #                   example: true
+  #                 message:
+  #                   type: string
+  #                   example: "Message history retrieved successfully"
+  #                 data:
+  #                   type: array
+  #                   items:
+  #                     type: object
+  #                     properties:
+  #                       messageId:
+  #                         type: string
+  #                         example: "message789"
+  #                       sender:
+  #                         type: string
+  #                         example: "client123"
+  #                       content:
+  #                         type: string
+  #                         example: "How are you feeling today?"
+  #                       timestamp:
+  #                         type: string
+  #                         format: date-time
+  #                         example: "2025-01-06T08:00:00Z"
+  #       '400':
+  #         description: Invalid input
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+  #                 status:
+  #                   type: boolean
+  #                   example: false
+  #                 message:
+  #                   type: string
+  #                   example: "Invalid input"
+  #                 data:
+  #                   type: object
+               
+
+  #   post:
+  #     tags:
+  #       - Messaging
+  #     summary: Send a message to a therapist
+  #     parameters:
+  #       - name: clientId
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #       - name: therapistId
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #     requestBody:
+  #       required: true
+  #       content:
+  #         application/json:
+  #           schema:
+  #             type: object
+  #             properties:
+  #               content:
+  #                 type: string
+  #             required:
+  #               - content
+  #     responses:
+  #       '200':
+  #         description: Message sent successfully
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+  #                 status:
+  #                   type: boolean
+  #                   example: true
+  #                 message:
+  #                   type: string
+  #                   example: "Message sent successfully"
+  #                 data:
+  #                   type: object
+  #                   properties:
+  #                     messageId:
+  #                       type: string
+  #                       example: "message789"
+  #                     sender:
+  #                       type: string
+  #                       example: "client123"
+  #                     content:
+  #                       type: string
+  #                       example: "How are you feeling today?"
+  #                     timestamp:
+  #                       type: string
+  #                       format: date-time
+  #                       example: "2025-01-06T08:00:00Z"
+  #       '400':
+  #         description: Invalid input
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+  #                 status:
+  #                   type: boolean
+  #                   example: false
+  #                 message:
+  #                   type: string
+  #                   example: "Invalid input"
+  #                 data:
+  #                   type: object
+                 
+  # /therapists/{therapistId}/clients/{clientId}/messages:
+  #   post:
+  #     tags:
+  #       - Messaging
+  #     summary: Send a message to a client
+  #     parameters:
+  #       - name: therapistId
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #       - name: clientId
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #     requestBody:
+  #       required: true
+  #       content:
+  #         application/json:
+  #           schema:
+  #             type: object
+  #             properties:
+  #               content:
+  #                 type: string
+  #             required:
+  #               - content
+  #     responses:
+  #       '200':
+  #         description: Message sent successfully
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+  #                 status:
+  #                   type: boolean
+  #                   example: true
+  #                 message:
+  #                   type: string
+  #                   example: "Message sent successfully"
+  #                 data:
+  #                   type: object
+  #                   properties:
+  #                     messageId:
+  #                       type: string
+  #                       example: "message123"
+  #                     sender:
+  #                       type: string
+  #                       example: "therapist456"
+  #                     content:
+  #                       type: string
+  #                       example: "I hope you're feeling better today."
+  #                     timestamp:
+  #                       type: string
+  #                       format: date-time
+  #                       example: "2025-01-06T09:30:00Z"
+  #       '400':
+  #         description: Invalid input
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+  #                 status:
+  #                   type: boolean
+  #                   example: false
+  #                 message:
+  #                   type: string
+  #                   example: "Invalid input"
+  #                 data:
+  #                   type: object
+      
+                  
+  /search/notes-and-journals:
+    get:
+      tags:
+        - Search
+      summary: "Search dynamically across therapist's session notes and client emotion journals"
+      description: "Allow clients to dynamically search for specific keywords across therapists' session notes and emotion journals."
+      parameters:
+        - name: keyword
+          in: query
+          description: "The keyword to search for in therapist session notes or emotion journals"
+          required: true
+          schema:
+            type: string
+        - name: clientId
+          in: query
+          description: "The client ID to search the emotion journal "
+          required: true
+          schema:
+            type: string
+        - name: therapist_id
+          in: query
+          description: "The therapist ID to search the therapist's notes"
+          required: true
+          schema:
+            type: string
+        - name: start_date
+          in: query
+          description: "Optional start date to filter search results"
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          description: "Optional end date to filter search results"
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: "A list of matching results from therapist notes and/or client emotion journals"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Response' 
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          results:
+                            type: object
+                            properties:
+                              journal:
+                                type: array
+                                items:
+                                  $ref: '#/components/schemas/JournalResponse'
+                              notes:
+                                type: array
+                                items:
+                                  $ref: '#/components/schemas/SessionResponse'
+                          
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+  
+
+
+  /search/therapists:
+    get:
+      tags:
+        - Search
+      summary: "Search dynamically for therapists"
+      description: "Allow clients to search for therapists dynamically by keywords, specializations, address, name."
+      parameters:
+        - name: keyword
+          in: query
+          description: "The keyword to search for therapists, e.g. name"
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "A list of therapists matching the search criteria"
+          content:
+            application/json:
+              schema:
                 allOf:
                   - $ref: '#/components/schemas/Response'
                   - type: object
                     properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message :
-                        type: string
-                        example: Error occured
-            
-
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TherapistResponse'
+                        
+                       
+                           
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+  
   /therapists/{therapistId}/sessions:
     post:
       tags:
@@ -977,16 +1223,14 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                    - $ref: '#/components/schemas/Response'
-                    - type: object
-                      properties:
-                        status:
-                          type: boolean
-                          example: false
-                        message :
-                          type: string
-                          example: Error occured
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+   
 
   /therapists/{therapistId}/sessions/{sessionId}:
     patch:
@@ -1056,20 +1300,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/SessionResponse'
         '400':
-          description: Session not found
+          description: Invalid input
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message:
-                        type: string
-                        example: "Error occured while fetching"
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
     delete:
       tags:
         - Sessions
@@ -1095,161 +1336,111 @@ paths:
               schema:
                 $ref: '#/components/schemas/Response'
         '400':
-          description: Session not found
+          description: Invalid input
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message:
-                        type: string
-                        example: "Error occured while fetching"
-
-  /therapists/{therapistId}/clients/request:
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+       
+  /auth/login:
     post:
       tags:
-        - Therapist Management
-      summary: Therapist requests to map a client to their therapy account
-      parameters:
-        - name: therapistId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: ClientId
-          in: query
-          required: true
-          schema:
-            type: string
+        - Authentication
+      summary: Authenticate user and get JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                allOf:
+                  - $ref: '#/components/schemas/LoginRequest'
+             
       responses:
         '200':
-          description: Client mapping request submitted successfully
+          description: Login successful
           content:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/TherapistResponse'
-
-
+                  - $ref: '#/components/schemas/LoginResponse'
         '400':
           description: Invalid input
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message :
-                        type: string
-                        example: Error occured
-  /search/notes-and-journals:
-    get:
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+
+  /message:
+    post:
       tags:
-        - Search
-      summary: "Search dynamically across therapist's session notes and client emotion journals"
-      description: "Allow clients to dynamically search for specific keywords across therapists' session notes and emotion journals."
-      parameters:
-        - name: keyword
-          in: query
-          description: "The keyword to search for in therapist session notes or emotion journals"
-          required: true
-          schema:
-            type: string
-        - name: client_id
-          in: query
-          description: "The client ID to search the emotion journal "
-          required: true
-          schema:
-            type: string
-        - name: therapist_id
-          in: query
-          description: "The therapist ID to search the therapist's notes"
-          required: true
-          schema:
-            type: string
-        - name: start_date
-          in: query
-          description: "Optional start date to filter search results"
-          required: false
-          schema:
-            type: string
-            format: date
-        - name: end_date
-          in: query
-          description: "Optional end date to filter search results"
-          required: false
-          schema:
-            type: string
-            format: date
+        - Messaging
+      summary: Send a message 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                  - $ref: '#/components/schemas/MessageRequest'
+
+
       responses:
         '200':
-          description: "A list of matching results from therapist notes and/or client emotion journals"
+          description: Message sent successfully
           content:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/Response' 
+                  - $ref: '#/components/schemas/Response'
                   - type: object
                     properties:
                       data:
-                        type: object
-                        properties:
-                          results:
-                            type: object
-                            properties:
-                              journal:
-                                type: array
-                                items:
-                                  $ref: '#/components/schemas/JournalResponse'
-                              notes:
-                                type: array
-                                items:
-                                  $ref: '#/components/schemas/SessionResponse'
-                          
+                          $ref: '#/components/schemas/MessageResponse'
         '400':
-          description: "Bad Request. Missing required parameters."
+          description: Invalid input
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message :
-                        type: string
-                        example: Error occured
-  /search/therapists:
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+  /message/history:
     get:
       tags:
-        - Search
-      summary: "Search dynamically for therapists"
-      description: "Allow clients to search for therapists dynamically by keywords, specializations, or name."
+        - Messaging
+      summary: Fetch message exchanges
       parameters:
-        - name: keyword
+        - name: participant1Id
           in: query
-          description: "The keyword to search for therapists, e.g. name"
           required: true
           schema:
             type: string
+          description: ID of the first participant (client or therapist)
+        - name: participant2Id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: ID of the second participant (client or therapist)
       responses:
         '200':
-          description: "A list of therapists matching the search criteria"
+          description: Conversation history fetched successfully
           content:
             application/json:
               schema:
@@ -1260,26 +1451,20 @@ paths:
                       data:
                         type: array
                         items:
-                          $ref: '#/components/schemas/TherapistResponse'
-                        
-                       
-                         
+                          $ref: '#/components/schemas/MessageResponse'
         '400':
-          description: "Bad Request. Missing required parameters."
+          description: Invalid input
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message :
-                        type: string
-                        example: Error occured
-        
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+    
   /search/customers:
     get:
       tags:
@@ -1336,118 +1521,32 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message :
-                        type: string
-                        example: Error occured
- 
- 
-       
-  /auth/login:
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+  /clients/{clientId}/journal-access/request:
     post:
       tags:
-        - Authentication
-      summary: Authenticate user and get JWT token
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-                allOf:
-                  - $ref: '#/components/schemas/LoginRequest'
-             
-      responses:
-        '200':
-          description: Login successful
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/LoginResponse'
-        '401':
-          description: Invalid credentials
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message :
-                        type: string
-                        example: Error occured
-
-  /message:
-    post:
-      tags:
-        - Messaging
-      summary: Send a message 
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              allOf:
-                  - $ref: '#/components/schemas/Response'
-
-
-      responses:
-        '200':
-          description: Message sent successfully
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      data:
-                          $ref: '#/components/schemas/MessageResponse'
-        '400':
-          description: Invalid input
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/Response'
-                  - type: object
-                    properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message :
-                        type: string
-                        example: Error occured
-  /message/history:
-    get:
-      tags:
-        - Messaging
-      summary: Fetch message exchanges
+        - Journals
+      summary: Request therapist access to client emotions journal
       parameters:
-        - name: participant1Id
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: therapistId
           in: query
           required: true
           schema:
             type: string
-          description: ID of the first participant (client or therapist)
-        - name: participant2Id
-          in: query
-          required: true
-          schema:
-            type: string
-          description: ID of the second participant (client or therapist)
       responses:
         '200':
-          description: Conversation history fetched successfully
+          description: Journal access request sent successfully
           content:
             application/json:
               schema:
@@ -1456,11 +1555,44 @@ paths:
                   - type: object
                     properties:
                       data:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/MessageResponse'
+                        type: object
+                        properties:
+                          requestId:
+                            type: string
+                            description: Unique ID for the journal access request
+                            example: "journalReq123"
         '400':
           description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+
+  /therapists/{therapistId}/clients/request:
+    post:
+      tags:
+        - Therapist Management
+      summary: Therapist requests to map a client to their therapy account
+      parameters:
+        - name: therapistId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: clientId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Client mapping request submitted successfully
           content:
             application/json:
               schema:
@@ -1468,15 +1600,143 @@ paths:
                   - $ref: '#/components/schemas/Response'
                   - type: object
                     properties:
-                      status:
-                        type: boolean
-                        example: false
-                      message :
-                        type: string
-                        example: Error occured
+                      data:
+                        allOf:
+                          - $ref: '#/components/schemas/TherapistResponse'
+                          - type: object
+                            properties:
+                              requestId:
+                                type: string
+                                description: Unique ID for the mapping request
+                                example: "req123"
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
 
-  
- 
+  # /clients/{clientId}/therapy/{therapistId}/status:
+  #   patch:
+  #     tags:
+  #       - Client Management
+  #     summary: Approve or reject therapist’s mapping request to client account
+  #     parameters:
+  #       - name: clientId
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #       - name: therapistId
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #       - name: action
+  #         in: query
+  #         required: true
+  #         schema:
+  #           type: string
+  #           enum:
+  #             - approve
+  #             - reject
+  #     responses:
+  #       '200':
+  #         description: Action processed successfully
+  #         content:
+  #           application/json:
+  #             schema:
+  #               allOf:
+  #                 - $ref: '#/components/schemas/Response'
+  #                 - type: object
+  #                   properties:
+  #                     data:
+  #                         $ref: '#/components/schemas/TherapistResponse'
+  #       '400':
+  #         description: Invalid input
+  #         content:
+  #           application/json:
+  #             schema:
+  #               allOf:
+  #                 - $ref: '#/components/schemas/Response'
+  #                 - type: object
+  #                   properties:
+  #                     status:
+  #                       type: boolean
+  #                       example: false
+  #                     message :
+  #                       type: string
+  #                       example: Error occured
+       
+  # /therapists/{therapistId}:
+  #   get:
+  #     tags:
+  #       - Therapist Management
+  #     summary: Get therapist information
+  #     parameters:
+  #       - name: therapistId
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #       - name: fieldsToExclude
+  #         in: query
+  #         required: false
+  #         schema:
+  #           type: string
+  #           description: Comma-separated list of fields to exclude from the response (e.g., "email,description")
+  #     responses:
+  #       '200':
+  #         description: Therapist information retrieved successfully
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+  #                 status:
+  #                   type: boolean
+  #                   example: true
+  #                 message:
+  #                   type: string
+  #                   example: "Therapist information retrieved successfully"
+  #                 data:
+  #                   type: object
+  #                   properties:
+  #                     email:
+  #                       type: string
+  #                       example: "therapist@example.com"
+  #                     name:
+  #                       type: string
+  #                       example: "Dr. John Smith"
+  #                     description:
+  #                       type: string
+  #                       example: "Experienced therapist specializing in cognitive therapy."
+  #                     therapistId:
+  #                       type: string
+  #                       example: "therapist123"
+  #               required:
+  #                 - status
+  #                 - message
+  #                 - data
+  #       '400':
+  #         description: Invalid input
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+  #                 status:
+  #                   type: boolean
+  #                   example: false
+  #                 message:
+  #                   type: string
+  #                   example: "Invalid input"
   /appointments/request:
     post:
       summary: Request an appointment in an available slot
@@ -1498,37 +1758,82 @@ paths:
                   schema:
                     $ref: '#/components/schemas/AppointmentResponse'
         '400':
-          description: Invalid request data
-        '404':
-          description: Therapist or slot not found
-
-  /appointments/{appointmentId}/accept:
-    put:
-      summary: Accept an appointment request
-      description: Allows a therapist to accept a pending appointment request from a client.
-      tags:
-        - Appointments
-      parameters:
-        - name: appointmentId
-          in: path
-          required: true
-          description: The ID of the appointment to accept.
-          schema:
-            type: string
-            example: "appointment789"
-      responses:
-        '200':
-          description: Appointment accepted successfully
+          description: Invalid input
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/AppointmentResponse'
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+
+  /requests/{requestId}/status:
+    put:
+      summary: Update the status of a request
+      description: Allows updating the status of any request (e.g., appointment requests, user requests, or others) using a query parameter.
+      tags:
+        - Requests
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          description: The ID of the request to update.
+          schema:
+            type: string
+            example: "request123"
+        - name: status
+          in: query
+          required: true
+          description: The new status of the request (e.g., `pending`, `approved`, or `rejected`).
+          schema:
+            type: string
+            enum:
+              - pending
+              - approved
+              - rejected
+            example: "approved"
+        - name: notes
+          in: query
+          required: false
+          description: Optional notes explaining the status change.
+          schema:
+            type: string
+            example: "Request approved for the specified date."
+      responses:
+        '200':
+          description: Request status updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  requestId:
+                    type: string
+                    description: The ID of the request.
+                    example: "request123"
+                  status:
+                    type: string
+                    description: The updated status of the request.
+                    example: "approved"
+                  notes:
+                    type: string
+                    description: Additional notes about the status change, if provided.
+                    example: "Request approved for the specified date."
         '400':
-          description: Invalid request data
-        '404':
-          description: Appointment not found
-        '409':
-          description: Appointment cannot be accepted (e.g., already accepted or rejected)
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
 
 components:
   schemas:
@@ -1606,9 +1911,9 @@ components:
         therapistId:
           type: string
           example: "therapist1234"
-        slotId:
+        sessionId:
           type: string
-          example: "slot456"
+          example: "sessionId"
         clientId:
           type: string
           example: "string"
@@ -1617,15 +1922,15 @@ components:
           example: "Looking forward to discussing progress."
       required:
         - therapistId
-        - slotId
+        - sessionId
         - clientId
         - message
     AppointmentResponse:
       type: object
       properties:
-        appointmentId:
+        requestId:
           type: string
-          example: "appointment789"
+          example: "request123"
         status:
           type: string
           example: "pending"
@@ -1635,7 +1940,7 @@ components:
         clientId:
           type: string
           example: "string"
-        slotId:
+        sessionId:
           type: string
           example: "slot456"
         requestedAt:
@@ -1643,7 +1948,7 @@ components:
           format: date-time
           example: "2025-01-07T09:00:00Z"
       required:
-        - appointmentId
+        - requestId
         - status
         - therapistId
         - clientId
@@ -1767,17 +2072,14 @@ components:
             type: string
             description: The therapist's password for account access.
             example: "securepassword123"
-          created_at:
-            type: string
-            format: date-time
-            example: '2025-01-13T12:34:56Z'
+
         required:
           - email
           - first_name
           - last_name
           - specialization
           - password
-          - created_at
+    
     UpdateRequest:
       type: object
       properties:
@@ -1836,26 +2138,29 @@ components:
     SessionRequest:
       type: object
       properties:
-        therapistId:
-          type: string
-          description: The ID of the therapist for the session
-        clientId:
-          type: string
-          description: The ID of the client for the session
         privateNotes:
           type: string
           description: Private notes visible only to the therapist
         sharedNotes:
           type: string
           description: Shared notes visible to both the therapist and client
-        date:
+        sessionDate:
           type: string
-          format: date-time
-          description: The date and time of the session
+          format: date
+          description: The exact date for the session (in YYYY-MM-DD format)
+        startTime:
+          type: string
+          format: time
+          description: The start time of the session (in HH:MM:SS format)
+        endTime:
+          type: string
+          format: time
+          description: The end time of the session (in HH:MM:SS format)
       required:
         - therapistId
-        - date
-        - clientId
+        - sessionDate
+        - startTime
+        - endTime
 
     SessionResponse:
       type: object
@@ -1863,27 +2168,38 @@ components:
         sessionId:
           type: string
           description: Unique ID of the session
-        clientId:
-          type: string
-          description: The ID of the client involved in the session
         therapistId:
           type: string
           description: The ID of the therapist who conducted the session
+        slotId:
+          type: string
+          description: Unique ID for the scheduled slot (can be used to refer to specific day and time combinations)
         privateNotes:
           type: string
           description: Private notes visible only to the therapist
         sharedNotes:
           type: string
           description: Shared notes visible to both the therapist and client
-        date:
+        sessionDate:
           type: string
-          format: date-time
-          description: The date and time of the session
+          format: date
+          description: The exact date of the session (in YYYY-MM-DD format)
+        startTime:
+          type: string
+          format: time
+          description: The start time of the session (in HH:MM:SS format)
+        endTime:
+          type: string
+          format: time
+          description: The end time of the session (in HH:MM:SS format)
       required:
         - sessionId
-        - clientId
         - therapistId
-        - date
+        - slotId
+        - sessionDate
+        - startTime
+        - endTime
+
     LoginResponse:
       type: object
       properties:
@@ -1906,6 +2222,32 @@ components:
         - status
         - message
         - data
+    Error500:
+      type: object
+      description: Internal Server Error - Unexpected condition occurred
+      allOf:
+        - $ref: '#/components/schemas/Response'
+        - type: object
+          properties:
+            status:
+              type: boolean
+              example: false
+            message:
+              type: string
+              example: "An unexpected error occurred on the server"
+    Error400:
+      type: object
+      description: Bad Request - Invalid input
+      allOf:
+        - $ref: '#/components/schemas/Response'
+        - type: object
+          properties:
+            status:
+              type: boolean
+              example: false
+            message:
+              type: string
+              example: "Error occurred" 
     LoginRequest:
       type: object
       properties:
