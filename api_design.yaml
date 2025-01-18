@@ -15,6 +15,8 @@ servers:
 tags:
   - name: Client Management
     description: Endpoints for managing client accounts and their interactions
+  - name: Mapping Management
+    description: Endpoints for managing mapping between clients and Therapists
   - name: Therapist Management
     description: Endpoints for managing therapist accounts and their interactions
   - name: Journals
@@ -197,10 +199,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error500'
-  /clients/{clientId}/therapists:
+  /mapping/clients/{clientId}/therapists:
     get:
       tags:
-        - Client Management
+        - Mapping Management
       summary: Retrieve the list of therapists associated with a client
       parameters:
         - name: clientId
@@ -239,7 +241,7 @@ paths:
     
     post:
       tags:
-        - Client Management
+        - Mapping Management
       summary: Associate a therapist with a client
       parameters:
         - name: clientId
@@ -282,7 +284,7 @@ paths:
                 $ref: '#/components/schemas/Error500'
     delete:
       tags:
-        - Client Management
+        - Mapping Management
       summary: Remove a therapist mapping from the client
       parameters:
         - name: clientId
@@ -321,7 +323,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error500'
-  /clients/{clientId}/therapists/{therapistId}:
+  /journal/clients/{clientId}/therapists/{therapistId}:
     put:
       tags:
         - Journals
@@ -416,7 +418,7 @@ paths:
     #                 example: "Therapist or client not found"
     #               data:
     #                 type: object
-  /clients/{clientId}/journals:
+  /journal/clients/{clientId}:
     post:
       tags:
         - Journals
@@ -499,7 +501,7 @@ paths:
                       
                     
   # /clients/{clientId}/journal-access/{therapistId}/status:
-  #   patch:
+  #   put:
   #     tags:
   #       - Journals
   #     summary: Approve or reject therapist's request for journal access
@@ -714,10 +716,10 @@ paths:
                 $ref: '#/components/schemas/Error500'
 
 
-  /therapists/{therapistId}/clients:
+  /mapping/therapists/{therapistId}/clients:
     get:
       tags:
-        - Therapist Management
+        - Mapping Management 
       summary: View list of clients mapped to the therapist
       parameters:
         - name: therapistId
@@ -738,7 +740,7 @@ paths:
                       data:
                         type: array
                         items:
-                          $ref: '#/components/schemas/TherapistResponse'
+                          $ref: '#/components/schemas/ClientResponse'
 
         '400':
           description: Invalid input
@@ -816,7 +818,7 @@ paths:
     #                 type: object
     delete:
       tags:
-        - Therapist Management
+        - Mapping Management
       summary: Remove a client mapping from the therapist
       parameters:
         - name: therapistId
@@ -1187,7 +1189,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error500'
   
-  /therapists/{therapistId}/sessions:
+  /session/therapists/{therapistId}:
     post:
       tags:
         - Sessions
@@ -1232,14 +1234,14 @@ paths:
                 $ref: '#/components/schemas/Error500'
    
 
-  /therapists/{therapistId}/sessions/{sessionId}:
-    patch:
+  /session/{sessionId}:
+    put:
       tags:
         - Sessions
       summary: Modify session details
       parameters:
         - name: therapistId
-          in: path
+          in: query
           required: true
           schema:
             type: string
@@ -1274,6 +1276,18 @@ paths:
                     properties:
                       data:
                         $ref: '#/components/schemas/SessionResponse'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
        
     get:
       tags:
@@ -1281,7 +1295,7 @@ paths:
       summary: Get session details
       parameters:
         - name: therapistId
-          in: path
+          in: query
           required: true
           schema:
             type: string
@@ -1317,7 +1331,7 @@ paths:
       summary: Delete session details
       parameters:
         - name: therapistId
-          in: path
+          in: query
           required: true
           schema:
             type: string
@@ -1528,7 +1542,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error500'
-  /clients/{clientId}/journal-access/request:
+  /journal/clients/{clientId}/journal-access/request:
     post:
       tags:
         - Journals
@@ -1574,10 +1588,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error500'
 
-  /therapists/{therapistId}/clients/request:
+  /mapping/therapists/{therapistId}/clients/request:
     post:
       tags:
-        - Therapist Management
+        - Mapping Management
       summary: Therapist requests to map a client to their therapy account
       parameters:
         - name: therapistId
@@ -1623,7 +1637,7 @@ paths:
                 $ref: '#/components/schemas/Error500'
 
   # /clients/{clientId}/therapy/{therapistId}/status:
-  #   patch:
+  #   put:
   #     tags:
   #       - Client Management
   #     summary: Approve or reject therapist’s mapping request to client account
@@ -1901,6 +1915,10 @@ components:
         specialization:
           type: string
           example: Cognitive Behavioral Therapy
+        address:
+          type: string
+          description: The Therapist address.
+          example: "123 Wellness Street, Health City"
         created_at:
           type: string
           format: date-time
@@ -1957,7 +1975,7 @@ components:
     JournalResponse:
       type: object
       properties:
-        journalId:
+        journalEntryId:
           type: string
           example: "journal789"
         clientId:
@@ -2072,6 +2090,10 @@ components:
             type: string
             description: The therapist's password for account access.
             example: "securepassword123"
+          address:
+            type: string
+            description: The Therapist address.
+            example: "123 Wellness Street, Health City"
 
         required:
           - email
