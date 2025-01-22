@@ -308,9 +308,7 @@ paths:
                   - type: object
                     properties:
                       data:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/TherapistResponse'
+                        $ref: '#/components/schemas/TherapistResponse'
         '400':
           description: Invalid input
           content:
