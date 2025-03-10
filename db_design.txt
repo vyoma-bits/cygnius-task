@@ -4,7 +4,7 @@
 #### Table Name: Messages
 This table stores all the messages exchanged between users (like therapists and clients or it can be clients and clients or therapists and therapists ).  
 Attributes:
-- `message_id` (string, Primary Key – unique for each message, can keep it like this receiver#sender )
+- `message_id` (string, Primary Key – unique for each message, can keep it like this receiver#sender#encoded_number )
 - `sender` (string, sender of the message)
 - `receiver` (string, receiver of the message)
 - `content` (string, the actual message text)
