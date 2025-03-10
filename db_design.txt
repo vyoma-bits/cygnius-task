@@ -4,23 +4,24 @@
 #### Table Name: Messages
 This table stores all the messages exchanged between users (like therapists and clients or it can be clients and clients or therapists and therapists ).  
 Attributes:
-- `message_id` (string, Primary Key – unique for each message)
+- `message_id` (string, Primary Key – unique for each message, can keep it like this receiver#sender )
 - `sender` (string, sender of the message)
 - `receiver` (string, receiver of the message)
 - `content` (string, the actual message text)
 - `timestamp` (string, used as a Sort Key for ordering messages)
 
 GSI:
-- `receiver-timestamp-index`
-  - Hash Key: `receiver`
-  - Range Key: `timestamp`
 
-This index helps fetch all messages sent to a specific receiver in chronological order( like based on timestamp , it can help us to create a chat in frontend).
+
+-'messages-index':Get messages sent by a person to another
+  -Hash key:'sender'
+  -Sort key:'message_id'
+
 
 Example Queries:
-- Get all messages for a specific receiver (e.g., a therapist):  
-  Query: receiver = 'therapist123' AND sort by timestamp  
-  Index Used: receiver-timestamp-index  
+
+-Get all messages sent bet A and B, we will use this index twice (A as sender,B as sender, then grouping them based on timestamp) , we will use if message_id .beginswith() with A#B(by using string concat.) constraint and receiver_id as constraint
+  Index used:receiver-sender-index
 
 ---
 
@@ -124,12 +125,14 @@ Attributes:
 - `from` (string, ID of the sender)
 - `to` (string, ID of the receiver)
 - `message` (string, message content of the request)
+-isApproved(boolean):default(false)
 
  GSI:
 
 from-type-index
 Hash Key: from
-Range Key: created_at
+Range Key: type
+These indices allow request sent from(clients or therapist can see their pending request)
 
 to-type-index
 Hash Key: to
@@ -157,14 +160,23 @@ Attributes:
 -'sessionDate' (string): The date the session is scheduled to take place.
 -'sessionStartTime' (string): The starting time of the session.
 -'sessionEndTime' (string): The ending time of the session.
+-'isBooked'(boolean):Is the session booked
+-'isCompleted(boolean):Whether the session is completed or not 
 
 GSI:
-- `client-createdAt-index`
+- `client-createdAt-index`:List the sessions for the client(give pending/upcoming sessions for the client with other therapists)
   - Hash Key: `client_id`
   - Range Key: `created_at`
-- `therapist-createdAt-index`
+- `therapist-createdAt-index`: List the sessions created by a particular therapist
   - Hash Key: `therapist_id`
   - Range Key: `created_at`
+
+- 'client-sessions':
+  -'Hash key':'clientId'
+  -'Range key':'therapist_id'
+-'therapist-sessions':
+  -'Hash key':'therapistId'
+  -Range key-'clientId'
 
 These indices allow sessions to be retrieved for a specific client or therapist, sorted by creation date.
 
@@ -174,7 +186,11 @@ Example Queries:
   Index Used: client-createdAt-index  
 - Get all sessions for a specific therapist:  
   Query: therapist_id = 'therapist123' AND sort by created_at  
-  Index Used: therapist-createdAt-index  
+  Index Used: therapist-createdAt-index
+-Get all sessions for a client for a particular therapist
+  Index used-client-sessions
+-Get all sessions for a therapist mapped to a client
+  index used:therapist-sessions
 
 ###7.UserDoc Tables
 ####Table Name :Users
