@@ -21,7 +21,7 @@ GSI:
 Example Queries:
 
 -Get all messages sent bet A and B, we will use this index twice (A as sender,B as sender, then grouping them based on timestamp) , we will use if message_id .beginswith() with A#B(by using string concat.) constraint and receiver_id as constraint
-  Index used:receiver-sender-index
+  Index used:messages-index
 
 ---
 
@@ -163,20 +163,31 @@ Attributes:
 -'isBooked'(boolean):Is the session booked
 -'isCompleted(boolean):Whether the session is completed or not 
 
-GSI:
-- `client-createdAt-index`:List the sessions for the client(give pending/upcoming sessions for the client with other therapists)
-  - Hash Key: `client_id`
-  - Range Key: `created_at`
-- `therapist-createdAt-index`: List the sessions created by a particular therapist
-  - Hash Key: `therapist_id`
-  - Range Key: `created_at`
+Composite attributes:
+  -sessionDate#sessionStartTime- combines the timings of the session
+  -client_id#therapist_id- will be null at the beginning when session is created willbe filled later
+  -therapist_id#client_id
 
-- 'client-sessions':
-  -'Hash key':'clientId'
-  -'Range key':'therapist_id'
--'therapist-sessions':
-  -'Hash key':'therapistId'
-  -Range key-'clientId'
+
+GSI:
+
+-therapist-session-time-index:
+  H.K-therapist_id
+  Range key-sessionDate#sessionStartTime 
+  Query-Sort the sessions of a  particular therapist according to their session timings
+-client-session-time-index
+ H.K-client_id
+  Range key-sessionDate#sessionStartTime 
+  Query-Clients can view all their sessions  across all therapists sorted by timestamp
+-client-therapist-datetime-index
+ H.K-client_id#therapist_id
+  Range key-sessionDate#sessionStartTime 
+  Query-Clients can view all their sessions with a specific therapist, sorted by date and time
+-Therapist-Client-DateTime Index
+H.K-therapist_id#client_id
+  Range key-sessionDate#sessionStartTime 
+  Query-Therapists can view all sessions with a specific client, sorted by date and time
+
 
 These indices allow sessions to be retrieved for a specific client or therapist, sorted by creation date.
 
