@@ -1,0 +1,219 @@
+## DynamoDB Design
+
+### 1. MessageDoc Table
+#### Table Name: Messages
+This table stores all the messages exchanged between users (like therapists and clients or it can be clients and clients or therapists and therapists ).  
+Attributes:
+- `message_id` (string, Primary Key – unique for each message, can keep it like this receiver#sender#encoded_number )
+- `sender` (string, sender of the message)
+- `receiver` (string, receiver of the message)
+- `content` (string, the actual message text)
+- `timestamp` (string, used as a Sort Key for ordering messages)
+
+GSI:
+
+
+-'messages-index':Get messages sent by a person to another
+  -Hash key:'sender'
+  -Sort key:'message_id'
+
+
+Example Queries:
+
+-Get all messages sent bet A and B, we will use this index twice (A as sender,B as sender, then grouping them based on timestamp) , we will use if message_id .beginswith() with A#B(by using string concat.) constraint and receiver_id as constraint
+  Index used:messages-index
+
+---
+
+### 2. ClientDoc Table
+#### Table Name: Clients
+This table stores information about the clients.  
+Attributes:
+- `client_id` (string, Primary Key)
+- `email` (string, client's email)
+- `name` (string, client’s name)
+- `phone` (string, phone number)
+- `address` (string, home address)
+- `dob` (string, date of birth)
+- `therapist_ids` (List of strings, therapists associated with the client)
+
+GSI:
+- `email-index`
+  - Hash Key: `email`
+
+This index allows you to look up clients by their email, which is useful for authentication and fetching profile details.Like user can login through email and password , and after successful authentication, we can fetch user details through email
+
+Example Queries:
+- Fetch client info by their email:  
+  Query: email = 'client@example.com'  
+  Index Used: email-index  
+
+---
+
+### 3. TherapistDoc Table
+#### Table Name: Therapists
+This table stores details of therapists registered on the platform.  
+Attributes:
+- `therapist_id` (string, Primary Key)
+- `email` (string, therapist’s email)
+- `first_name` (string, therapist's first name)
+- `last_name` (string, therapist's last name)
+- `specialization` (string, area of expertise)
+- `created_at` (string, date the therapist joined the platform)
+-'address' (string, address of the therapist)
+
+- `client_ids` (List of strings, clients associated with the therapist)
+
+GSI:
+- `email-index`
+  - Hash Key: `email`
+- `specialization-createdAt-index`
+  - Hash Key: `specialization`
+  - Range Key: `created_at`
+ -'address-index'
+ Hash Key: address
+  Range Key: created_at
+
+These indices help you find therapists by email or search by their specialization,address while sorting results by join date.
+
+Example Queries:
+- Find therapists by specialization:  
+  Query: specialization = 'Cognitive Therapy' AND sort by created_at  
+  Index Used: specialization-createdAt-index  
+
+---
+
+### 4. JournalDoc Table
+#### Table Name: Journals
+This table tracks client journals.  
+Attributes:
+- `journal_id` (string, Primary Key)
+- `client_id` (string, ID of the client who created the journal)
+- `emotion` (string, emotional state logged in the journal)
+- `feeling` (string, detailed feelings)
+- `intensity` (number, how intense the emotion is)
+- `notes` (string, optional notes from the client)
+- `timestamp` (string, Sort Key, time the journal was created)
+
+GSI:
+- `client-timestamp-index`
+  - Hash Key: `client_id`
+  - Range Key: `timestamp`
+- `emotion-intensity-index`
+  - Hash Key: `emotion`
+  - Range Key: `intensity`
+
+These indices allow journals to be retrieved by client and timestamp or analyzed by emotion sorted by intensity.
+
+Example Queries:
+- Retrieve journals for a specific client:  
+  Query: client_id = 'client123' AND sort by timestamp  
+  Index Used: client-timestamp-index  
+- Analyze journals by emotion:  
+  Query: emotion = 'Happiness' AND sort by intensity  
+  Index Used: emotion-intensity-index  
+
+---
+
+### 5. RequestDoc Table
+#### Table Name: Requests
+This table tracks various requests (e.g., journal access, therapist access).  
+Attributes:
+- `request_id` (string, Primary Key)
+- `created_at` (string, Sort Key)
+- `type` (string(Journal,AccountAccess), type of request)
+- `from` (string, ID of the sender)
+- `to` (string, ID of the receiver)
+- `message` (string, message content of the request)
+-isApproved(boolean):default(false)
+
+ GSI:
+
+from-type-index
+Hash Key: from
+Range Key: type
+These indices allow request sent from(clients or therapist can see their pending request)
+
+to-type-index
+Hash Key: to
+Range Key: type
+These indices allow requests to be filtered by sender, receiver, or type
+
+Example Queries:
+Query: from = 'client123' AND type = 'Journal'  
+ 
+GSI Used: from-type-index  and similar for to index also like journal access request sent to a particular client  
+
+---
+
+### 6. SessionsDoc Table
+#### Table Name: Sessions
+This table records therapy sessions between therapists and clients.  
+Attributes:
+- `session_id` (string, Primary Key)
+- `therapist_id` (string, Sort Key, therapist conducting the session)
+- `client_id` (string, client attending the session)
+- `private_notes` (string, notes visible to the therapist only)
+- `shared_notes` (string, notes visible to both therapist and client)
+- `created_at` (string, time the session was created)
+- `updated_at` (string, time the session was last updated)
+-'sessionDate' (string): The date the session is scheduled to take place.
+-'sessionStartTime' (string): The starting time of the session.
+-'sessionEndTime' (string): The ending time of the session.
+-'isBooked'(boolean):Is the session booked
+-'isCompleted(boolean):Whether the session is completed or not 
+
+Composite attributes:
+  -sessionDate#sessionStartTime- combines the timings of the session
+  -client_id#therapist_id- will be null at the beginning when session is created willbe filled later
+  -therapist_id#client_id
+
+
+GSI:
+
+-therapist-session-time-index:
+  H.K-therapist_id
+  Range key-sessionDate#sessionStartTime 
+  Query-Sort the sessions of a  particular therapist according to their session timings
+-client-session-time-index
+ H.K-client_id
+  Range key-sessionDate#sessionStartTime 
+  Query-Clients can view all their sessions  across all therapists sorted by timestamp
+-client-therapist-datetime-index
+ H.K-client_id#therapist_id
+  Range key-sessionDate#sessionStartTime 
+  Query-Clients can view all their sessions with a specific therapist, sorted by date and time
+-Therapist-Client-DateTime Index
+H.K-therapist_id#client_id
+  Range key-sessionDate#sessionStartTime 
+  Query-Therapists can view all sessions with a specific client, sorted by date and time
+
+
+These indices allow sessions to be retrieved for a specific client or therapist, sorted by creation date.
+
+Example Queries:
+- Get all sessions for a specific client:  
+  Query: client_id = 'client123' AND sort by created_at  
+  Index Used: client-createdAt-index  
+- Get all sessions for a specific therapist:  
+  Query: therapist_id = 'therapist123' AND sort by created_at  
+  Index Used: therapist-createdAt-index
+-Get all sessions for a client for a particular therapist
+  Index used-client-sessions
+-Get all sessions for a therapist mapped to a client
+  index used:therapist-sessions
+
+###7.UserDoc Tables
+####Table Name :Users
+This table stores the details of the users(their hashed password,email,role(client,Therapist))
+Attributes:
+user_id (string, Primary Key): Unique identifier for the user.
+email (string): The user's email address. This is used for authentication and communication.
+hashed_password (string): The user's hashed password for secure login.
+role (string): Role of the user, either "client" or "therapist".
+created_at (string): Timestamp when the user account was created 
+updated_at (string): Timestamp when the user account was last updated 
+ (GSIs):
+email-index
+Hash Key: email
+This index allows quick retrieval of user data based on email.
