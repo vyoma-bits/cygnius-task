@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.myorg</groupId>
+    <artifactId>aws-cdk-final</artifactId>
+    <version>0.1</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <cdk.version>2.181.1</cdk.version>
+        <constructs.version>[10.0.0,11.0.0)</constructs.version>
+        <junit.version>5.7.1</junit.version>
+        <aws.sdk.version>2.25.11</aws.sdk.version>
+        <lambda.core.version>1.2.3</lambda.core.version>
+        <lambda.events.version>3.11.4</lambda.events.version>
+        <jackson.version>2.16.1</jackson.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <release>17</release>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <mainClass>com.myorg.AwsCdkFinalApp</mainClass>
+                </configuration>
+            </plugin>
+
+            <!-- ✅ Maven Shade Plugin to create a Fat JAR -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <!-- AWS CDK -->
+        <dependency>
+            <groupId>software.amazon.awscdk</groupId>
+            <artifactId>aws-cdk-lib</artifactId>
+            <version>${cdk.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>software.constructs</groupId>
+            <artifactId>constructs</artifactId>
+            <version>${constructs.version}</version>
+        </dependency>
+
+        <!-- AWS Lambda Core -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-lambda-java-core</artifactId>
+            <version>${lambda.core.version}</version>
+        </dependency>
+
+        <!-- AWS Lambda Events Library -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-lambda-java-events</artifactId>
+            <version>${lambda.events.version}</version>
+        </dependency>
+
+        <!-- AWS SDK for Java v2 - DynamoDB -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>dynamodb</artifactId>
+            <version>${aws.sdk.version}</version>
+        </dependency>
+
+        <!-- Jackson for JSON Parsing -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <!-- JUnit for Testing -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
