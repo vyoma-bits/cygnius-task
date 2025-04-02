@@ -18,6 +18,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * This lambda is used to create a request
+ */
 @Log
 public class CreateRequest implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private final DynamoDbClient dynamoDbClient = DynamoDbClient.create();
@@ -37,9 +40,9 @@ public class CreateRequest implements RequestHandler<APIGatewayProxyRequestEvent
             String requestId = UUID.randomUUID().toString();
             String createdAt = String.valueOf(Instant.now().toEpochMilli());
             Map<String, AttributeValue> item = new HashMap<>();
-            item.put("request_id", AttributeValue.builder().s(requestId).build());
-            item.put("created_at", AttributeValue.builder().s(createdAt).build());
-            item.put("type", AttributeValue.builder().s(request.getType()).build());
+            item.put("requestId", AttributeValue.builder().s(requestId).build());
+            item.put("createdAt", AttributeValue.builder().s(createdAt).build());
+            item.put("type", AttributeValue.builder().s(request.getType().name()).build());
             item.put("from", AttributeValue.builder().s(request.getFrom()).build());
             item.put("to", AttributeValue.builder().s(request.getTo()).build());
             item.put("message", AttributeValue.builder().s(request.getMessage()).build());

@@ -1,14 +1,16 @@
 package com.myorg.cdk;
 
 import com.myorg.utils.LambdaFactory;
+import lombok.Getter;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
+import software.amazon.awscdk.services.events.targets.LambdaFunction;
 import software.amazon.awscdk.services.iam.*;
 import software.amazon.awscdk.services.lambda.Function;
 import software.constructs.Construct;
 
 import java.util.List;
-
+@Getter
 public class LambdaStack extends Stack {
 
     private final Function messagesLambda;
@@ -20,6 +22,13 @@ public class LambdaStack extends Stack {
     private final Function readSessionLambda;
     private final Function createRequestLambda;
     private final Function updateRequestStatusLambda;
+    private final Function createMappingLambda;
+    private final Function updateMappingLambda;
+    private final Function listMappingLambda;
+    private final Function deleteMappingLambda;
+    private final Function getRequestLambda;
+    private final Function createJournalLambda;
+
 
     public LambdaStack(final Construct scope, final String id, final StackProps props) {
         super(scope, id, props);
@@ -90,16 +99,45 @@ public class LambdaStack extends Stack {
         updateRequestStatusLambda = LambdaFactory.createLambda(this, "UpdateRequestStatusLambda",
                 "com.myorg.lambdas.requests.UpdateRequestStatus::handleRequest",
                 "target/aws-cdk-final-0.1.jar", lambdaRole);
+        createMappingLambda = LambdaFactory.createLambda(this, "createMappingLambda",
+                "com.myorg.lambdas.mapping.CreateMapping::handleRequest",
+                "target/aws-cdk-final-0.1.jar", lambdaRole);
+        updateMappingLambda = LambdaFactory.createLambda(this, "updateMappingLambda",
+                "com.myorg.lambdas.mapping.UpdateMapping::handleRequest",
+                "target/aws-cdk-final-0.1.jar", lambdaRole);
+        listMappingLambda = LambdaFactory.createLambda(this, "listMappingLambda",
+                "com.myorg.lambdas.mapping.ListMapping::handleRequest",
+                "target/aws-cdk-final-0.1.jar", lambdaRole);
+        deleteMappingLambda = LambdaFactory.createLambda(this, "deleteMappingLambda",
+                "com.myorg.lambdas.mapping.DeleteMapping::handleRequest",
+                "target/aws-cdk-final-0.1.jar", lambdaRole);
+        getRequestLambda = LambdaFactory.createLambda(this, "GetRequestDetailsLambda",
+                "com.myorg.lambdas.requests.GetRequestDetails::handleRequest",
+                "target/aws-cdk-final-0.1.jar", lambdaRole)
+                ;
+        createJournalLambda = LambdaFactory.createLambda(this, "createJournalLambda",
+                "com.myorg.lambdas.journals.CreateJournal::handleRequest",
+                "target/aws-cdk-final-0.1.jar", lambdaRole)
+        ;
+
+        updateRequestStatusLambda.addEnvironment("GET_REQUEST_DETAILS_LAMBDA", getRequestLambda.getFunctionName());
+        updateRequestStatusLambda.addEnvironment("UPDATE_MAPPING_LAMBDA", updateMappingLambda.getFunctionName());
+
+
+
+        updateRequestStatusLambda.addToRolePolicy(PolicyStatement.Builder.create()
+                .effect(Effect.ALLOW)
+                .actions(List.of(
+                        "lambda:InvokeFunction",
+                        "lambda:InvokeAsync",
+                        "lambda:GetFunction",
+                        "lambda:GetFunctionConfiguration",
+                        "lambda:ListFunctions"
+                ))
+                .resources(List.of("*"))  
+                .build());
     }
 
-    //  Getters
-    public Function getMessagesLambda() { return messagesLambda; }
-    public Function getMessageHistoryLambda() { return messageHistoryLambda; }
-    public Function getCreateSessionLambda() { return createSessionLambda; }
-    public Function getUpdateSessionLambda() { return updateSessionLambda; }
-    public Function getDeleteSessionLambda() { return deleteSessionLambda; }
-    public Function getListSessionsLambda() { return listSessionsLambda; }
-    public Function getReadSessionLambda() { return readSessionLambda; }
-    public Function getCreateRequestLambda() { return createRequestLambda; }
-    public Function getUpdateRequestStatusLambda() { return updateRequestStatusLambda; }
+
+
 }

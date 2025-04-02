@@ -12,7 +12,12 @@ public class ApiGatewayStack extends Stack {
                            Function deleteSessionLambda, Function listSessionsLambda,
                            Function readSessionLambda,
                            // ✅ Newly added for Requests
-                           Function createRequestLambda, Function updateRequestStatusLambda
+                           Function createRequestLambda, Function updateRequestStatusLambda,Function createMappingLambda,
+                           Function updateMappingLambda,
+                           Function listMappingLambda,
+                           Function deleteMappingLambda,
+                           Function getRequestDetailsLambda,
+                           Function createJournallambda
                            ) {
         super(scope, id);
         RestApi api = RestApi.Builder.create(this, "TherapyApi")
@@ -38,8 +43,22 @@ public class ApiGatewayStack extends Stack {
 
         requestsResource.addMethod("POST", LambdaIntegration.Builder.create(createRequestLambda).build());
 
-        requestsResource.addResource("status")
-                .addMethod("PUT", LambdaIntegration.Builder.create(updateRequestStatusLambda).build());
+        Resource requestByIdResource = requestsResource.addResource("{requestId}");
+
+        requestByIdResource.addMethod("GET", LambdaIntegration.Builder.create(getRequestDetailsLambda).build());
+        requestByIdResource.addMethod("PUT", LambdaIntegration.Builder.create(updateRequestStatusLambda).build());
+
+        Resource mappingsResource = api.getRoot().addResource("mappings");
+        mappingsResource.addMethod("POST", LambdaIntegration.Builder.create(createMappingLambda).build());
+
+        Resource mappingByIdResource = mappingsResource.addResource("{mappingId}");
+        mappingByIdResource.addMethod("PUT", LambdaIntegration.Builder.create(updateMappingLambda).build());
+        mappingByIdResource.addMethod("DELETE", LambdaIntegration.Builder.create(deleteMappingLambda).build());
+        mappingByIdResource.addMethod("GET", LambdaIntegration.Builder.create(listMappingLambda).build());
+
+        Resource journalResource = api.getRoot().addResource("journals");
+        sessionsResource.addMethod("POST", LambdaIntegration.Builder.create(createJournallambda).build());
+
 
     }
 }

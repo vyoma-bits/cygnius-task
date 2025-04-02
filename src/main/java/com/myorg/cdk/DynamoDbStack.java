@@ -1,5 +1,6 @@
 package com.myorg.cdk;
 
+import com.myorg.CollectionNames;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
 import software.amazon.awscdk.services.dynamodb.*;
@@ -66,15 +67,15 @@ public class DynamoDbStack extends Stack {
 
         // 4. Journals Table
         Table journalsTable = Table.Builder.create(this, "Journals")
-                .tableName("Journals")
-                .partitionKey(Attribute.builder().name("journal_id").type(AttributeType.STRING).build())
+                .tableName(CollectionNames.JOURNALS)
+                .partitionKey(Attribute.builder().name("journalId").type(AttributeType.STRING).build())
                 .sortKey(Attribute.builder().name("timestamp").type(AttributeType.STRING).build())
                 .billingMode(BillingMode.PAY_PER_REQUEST)
                 .build();
 
         journalsTable.addGlobalSecondaryIndex(GlobalSecondaryIndexProps.builder()
                 .indexName("client-timestamp-index")
-                .partitionKey(Attribute.builder().name("client_id").type(AttributeType.STRING).build())
+                .partitionKey(Attribute.builder().name("clientId").type(AttributeType.STRING).build())
                 .sortKey(Attribute.builder().name("timestamp").type(AttributeType.STRING).build())
                 .projectionType(ProjectionType.ALL)
                 .build());
@@ -89,8 +90,7 @@ public class DynamoDbStack extends Stack {
         // 5. Requests Table
         Table requestsTable = Table.Builder.create(this, "Requests")
                 .tableName("Requests")
-                .partitionKey(Attribute.builder().name("request_id").type(AttributeType.STRING).build())
-                .sortKey(Attribute.builder().name("created_at").type(AttributeType.STRING).build())
+                .partitionKey(Attribute.builder().name("requestId").type(AttributeType.STRING).build())
                 .billingMode(BillingMode.PAY_PER_REQUEST)
                 .build();
 
@@ -154,6 +154,40 @@ public class DynamoDbStack extends Stack {
         usersTable.addGlobalSecondaryIndex(GlobalSecondaryIndexProps.builder()
                 .indexName("email-index")
                 .partitionKey(Attribute.builder().name("email").type(AttributeType.STRING).build())
+                .projectionType(ProjectionType.ALL)
+                .build());
+        Table mappingsTable = Table.Builder.create(this, CollectionNames.MAPPINGS)
+                .tableName(CollectionNames.MAPPINGS)
+                .partitionKey(Attribute.builder().name("mappingId").type(AttributeType.STRING).build())
+                .billingMode(BillingMode.PAY_PER_REQUEST)
+                .build();
+
+        mappingsTable.addGlobalSecondaryIndex(GlobalSecondaryIndexProps.builder()
+                .indexName("therapist-client-index")
+                .partitionKey(Attribute.builder().name("therapistId").type(AttributeType.STRING).build())
+                .sortKey(Attribute.builder().name("clientId").type(AttributeType.STRING).build())
+                .projectionType(ProjectionType.ALL)
+                .build());
+
+        mappingsTable.addGlobalSecondaryIndex(GlobalSecondaryIndexProps.builder()
+                .indexName("mapping-status-index")
+                .partitionKey(Attribute.builder().name("clientId").type(AttributeType.STRING).build())
+                .sortKey(Attribute.builder().name("mappingStatus").type(AttributeType.STRING).build())
+                .projectionType(ProjectionType.ALL)
+                .build());
+
+        mappingsTable.addGlobalSecondaryIndex(GlobalSecondaryIndexProps.builder()
+                .indexName("journal-access-index")
+                .partitionKey(Attribute.builder().name("clientId").type(AttributeType.STRING).build())
+                .sortKey(Attribute.builder().name("journalAccess").type(AttributeType.STRING).build())
+                .projectionType(ProjectionType.ALL)
+                .build());
+
+// Add this GSI to query all therapist mappings for a specific client
+        mappingsTable.addGlobalSecondaryIndex(GlobalSecondaryIndexProps.builder()
+                .indexName("client-therapists-index")
+                .partitionKey(Attribute.builder().name("clientId").type(AttributeType.STRING).build())
+                .sortKey(Attribute.builder().name("createdAt").type(AttributeType.NUMBER).build())
                 .projectionType(ProjectionType.ALL)
                 .build());
     }

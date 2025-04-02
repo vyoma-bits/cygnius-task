@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * This lambda returns all the sessions of a therapist
+ */
 @Log
 public class ListSessions implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
@@ -67,15 +70,9 @@ public class ListSessions implements RequestHandler<APIGatewayProxyRequestEvent,
         } catch (Exception e) {
             log.severe("Error while listing sessions: " + e.getMessage());
             Response errorResponse = new Response(false, "Internal Server Error", null);
-            return response.withStatusCode(500).withBody(safeWrite(errorResponse));
+            return response.withStatusCode(500).withBody(String.valueOf(errorResponse));
         }
     }
 
-    private String safeWrite(Response response) {
-        try {
-            return objectMapper.writeValueAsString(response);
-        } catch (Exception ex) {
-            return "{\"status\": false, \"message\": \"Serialization error\"}";
-        }
-    }
+
 }

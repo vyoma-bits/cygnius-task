@@ -26,7 +26,13 @@ public class AwsCdkFinalApp {
                 lambdaStack.getListSessionsLambda(),
                 lambdaStack.getReadSessionLambda(),
                 lambdaStack.getCreateRequestLambda(),
-                lambdaStack.getUpdateRequestStatusLambda()
+                lambdaStack.getUpdateRequestStatusLambda(),
+                lambdaStack.getCreateMappingLambda(),
+                lambdaStack.getUpdateMappingLambda(),
+                lambdaStack.getListMappingLambda(),
+                lambdaStack.getDeleteMappingLambda(),
+                lambdaStack.getGetRequestLambda(),
+                lambdaStack.getCreateJournalLambda()
         );
 
 

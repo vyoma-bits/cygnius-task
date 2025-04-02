@@ -1,4 +1,4 @@
-package com.myorg.lambdas.sessions;
+package com.myorg.lambdas.requests;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -18,10 +18,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This lambda reads a particualr session details
+ * This lambda is used to get the details of the request item
  */
 @Slf4j
-public class ReadSession implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class GetRequestDetails implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     private final DynamoDbClient dynamoDbClient = DynamoDbClient.create();
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -31,35 +31,41 @@ public class ReadSession implements RequestHandler<APIGatewayProxyRequestEvent, 
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
         try {
             log.info("Received event: {}", event);
-            String sessionId = event.getQueryStringParameters() != null ? event.getQueryStringParameters().get("sessionId") : null;
-            if (sessionId == null || sessionId.isEmpty()) {
-                log.warn("Missing required parameter: sessionId");
-                return response.withStatusCode(400).withBody(objectMapper.writeValueAsString(new Response(false, "Missing required parameter: sessionId", null)));
+            String requestId = event.getPathParameters() != null ? event.getPathParameters().get("requestId") : null;
+
+
+            if (requestId == null || requestId.isEmpty()) {
+                log.warn("Missing required parameter: requestId");
+                return response.withStatusCode(400).withBody(objectMapper.writeValueAsString(new Response(false, "Missing required parameter: requestId", null)));
             }
-            log.info("Querying for sessionId: {}", sessionId);
+
+            log.info("Querying for requestId: {}", requestId);
             Map<String, AttributeValue> expressionValues = new HashMap<>();
-            expressionValues.put(":sessionId", AttributeValue.builder().s(sessionId).build());
+            expressionValues.put(":requestId", AttributeValue.builder().s(requestId).build());
 
             QueryRequest queryRequest = QueryRequest.builder()
-                    .tableName(CollectionNames.SESSIONS)
-                    .keyConditionExpression("session_id = :sessionId")
+                    .tableName(CollectionNames.REQUESTS)
+                    .keyConditionExpression("requestId = :requestId")
                     .expressionAttributeValues(expressionValues)
                     .build();
 
             QueryResponse queryResponse = dynamoDbClient.query(queryRequest);
             List<Map<String, AttributeValue>> items = queryResponse.items();
+
             log.info("Query result count: {}", items.size());
 
             if (items.isEmpty()) {
-                log.warn("Session not found for sessionId: {}", sessionId);
-                return response.withStatusCode(404).withBody(objectMapper.writeValueAsString(new Response(false, "Session not found", null)));
+                log.warn("Request not found for requestId: {}", requestId);
+                return response.withStatusCode(404).withBody(objectMapper.writeValueAsString(new Response(false, "Request not found", null)));
             }
-            Map<String, Object> sessionData = convertDynamoItemToMap(items.get(0));
-            log.info("Session fetched successfully for sessionId: {}", sessionId);
-            return response.withStatusCode(200).withBody(objectMapper.writeValueAsString(new Response(true, "Session fetched successfully", sessionData)));
+
+            Map<String, Object> requestData = convertDynamoItemToMap(items.get(0));
+
+            log.info("Request details fetched successfully for requestId: {}", requestId);
+            return response.withStatusCode(200).withBody(objectMapper.writeValueAsString(new Response(true, "Request details fetched successfully", requestData)));
 
         } catch (Exception e) {
-            log.error("Error while reading session: ", e);
+            log.error("Error while fetching request details: ", e);
             return response.withStatusCode(500).withBody("{\"error\": \"" + e.getMessage() + "\"}");
         }
     }

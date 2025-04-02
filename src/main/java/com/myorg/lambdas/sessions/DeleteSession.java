@@ -13,6 +13,9 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This lambda deletes the session
+ */
 @Slf4j
 public class DeleteSession implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
