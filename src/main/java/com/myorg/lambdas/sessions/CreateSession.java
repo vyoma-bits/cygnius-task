@@ -18,6 +18,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * This lambda creates a new session for the therapist
+ */
 @Log
 public class CreateSession implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private final DynamoDbClient dynamoDbClient = DynamoDbClient.create();

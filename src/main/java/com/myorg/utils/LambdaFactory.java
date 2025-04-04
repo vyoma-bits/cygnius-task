@@ -19,12 +19,12 @@ public class LambdaFactory {
      */
     public static Function createLambda(Construct scope, String functionName, String handler, String jarPath, IRole role) {
         return Function.Builder.create(scope, functionName)
-                .runtime(Runtime.JAVA_17)  // ✅ Change to Java 17 if needed
-                .code(Code.fromAsset(jarPath)) // ✅ Pass JAR path dynamically
+                .runtime(Runtime.JAVA_17)
+                .code(Code.fromAsset(jarPath))
                 .role(role)
                 .handler(handler)
-                .memorySize(512)  // ✅ 512MB RAM
-                .timeout(Duration.seconds(10))  // ✅ 10s Timeout
+                .memorySize(512)
+                .timeout(Duration.seconds(10))
                 .build();
     }
 }

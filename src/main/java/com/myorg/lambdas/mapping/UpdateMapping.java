@@ -19,6 +19,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This lambda is used for update mapping status ,it can update the JournalAccessStatus,MappingStatus.
+ */
 @Log
 public class UpdateMapping implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private final DynamoDbClient dynamoDbClient = DynamoDbClient.create();

@@ -14,6 +14,9 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import java.time.Instant;
 import java.util.Map;
 
+/**
+ * This lambda is used to create a message item in the collection
+ */
 public class CreateMessage implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     private final DynamoDbClient dynamoDbClient = DynamoDbClient.create();

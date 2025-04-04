@@ -36,7 +36,6 @@ public class CreateMapping implements RequestHandler<APIGatewayProxyRequestEvent
                 Response errorResponse = new Response(false, "ClientId and TherapistId are required", null);
                 return response.withStatusCode(400).withBody(objectMapper.writeValueAsString(errorResponse));
             }
-
             String mappingId = UUID.randomUUID().toString();
             long createdAtTimestamp = Instant.now().toEpochMilli();
             MappingStatus mappingStatus = request.getMappingStatus() != null ? request.getMappingStatus() : MappingStatus.NOT_CONNECTED;

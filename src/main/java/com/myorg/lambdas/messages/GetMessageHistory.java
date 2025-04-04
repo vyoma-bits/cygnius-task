@@ -12,6 +12,9 @@ import software.amazon.awssdk.services.dynamodb.model.*;
 
 import java.util.*;
 
+/**
+ * This lambda is used to retrieve the message history between two persons(sender&receiver)
+ */
 @Slf4j
 public class GetMessageHistory implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 

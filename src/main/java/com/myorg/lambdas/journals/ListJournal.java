@@ -1,4 +1,4 @@
-package com.myorg.lambdas.sessions;
+package com.myorg.lambdas.journals;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -18,10 +18,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This lambda reads a particular session details
+ * This lambda reads a particualr session details
  */
 @Slf4j
-public class ReadSession implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class ListJournal implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     private final DynamoDbClient dynamoDbClient = DynamoDbClient.create();
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -31,32 +31,30 @@ public class ReadSession implements RequestHandler<APIGatewayProxyRequestEvent, 
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
         try {
             log.info("Received event: {}", event);
-            String sessionId = event.getQueryStringParameters() != null ? event.getQueryStringParameters().get("sessionId") : null;
-            if (sessionId == null || sessionId.isEmpty()) {
+            String journalId = event.getQueryStringParameters() != null ? event.getQueryStringParameters().get("journalId") : null;
+            if (journalId == null || journalId.isEmpty()) {
                 log.warn("Missing required parameter: sessionId");
-                return response.withStatusCode(400).withBody(objectMapper.writeValueAsString(new Response(false, "Missing required parameter: sessionId", null)));
+                return response.withStatusCode(400).withBody(objectMapper.writeValueAsString(new Response(false, "Missing required parameter: journalId", null)));
             }
-            log.info("Querying for sessionId: {}", sessionId);
+            log.info("Querying for sessionId: {}", journalId);
             Map<String, AttributeValue> expressionValues = new HashMap<>();
-            expressionValues.put(":sessionId", AttributeValue.builder().s(sessionId).build());
-
+            expressionValues.put(":journalId", AttributeValue.builder().s(journalId).build());
             QueryRequest queryRequest = QueryRequest.builder()
-                    .tableName(CollectionNames.SESSIONS)
-                    .keyConditionExpression("session_id = :sessionId")
+                    .tableName(CollectionNames.JOURNALS)
+                    .keyConditionExpression("journalId = :journalId")
                     .expressionAttributeValues(expressionValues)
                     .build();
-
             QueryResponse queryResponse = dynamoDbClient.query(queryRequest);
             List<Map<String, AttributeValue>> items = queryResponse.items();
             log.info("Query result count: {}", items.size());
 
             if (items.isEmpty()) {
-                log.warn("Session not found for sessionId: {}", sessionId);
-                return response.withStatusCode(404).withBody(objectMapper.writeValueAsString(new Response(false, "Session not found", null)));
+                log.warn("journal not found for journalId: {}", journalId);
+                return response.withStatusCode(404).withBody(objectMapper.writeValueAsString(new Response(false, "journal not found", null)));
             }
             Map<String, Object> sessionData = convertDynamoItemToMap(items.get(0));
-            log.info("Session fetched successfully for sessionId: {}", sessionId);
-            return response.withStatusCode(200).withBody(objectMapper.writeValueAsString(new Response(true, "Session fetched successfully", sessionData)));
+            log.info("journal fetched successfully for journalId: {}", journalId);
+            return response.withStatusCode(200).withBody(objectMapper.writeValueAsString(new Response(true, "journal fetched successfully", sessionData)));
 
         } catch (Exception e) {
             log.error("Error while reading session: ", e);
@@ -64,6 +62,11 @@ public class ReadSession implements RequestHandler<APIGatewayProxyRequestEvent, 
         }
     }
 
+    /**
+     * This function is used to convert Dynamo Db item to into a Map.
+     * @param item
+     * @return
+     */
     private Map<String, Object> convertDynamoItemToMap(Map<String, AttributeValue> item) {
         Map<String, Object> result = new HashMap<>();
         for (Map.Entry<String, AttributeValue> entry : item.entrySet()) {

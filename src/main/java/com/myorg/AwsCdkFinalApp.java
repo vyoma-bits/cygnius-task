@@ -32,10 +32,11 @@ public class AwsCdkFinalApp {
                 lambdaStack.getListMappingLambda(),
                 lambdaStack.getDeleteMappingLambda(),
                 lambdaStack.getGetRequestLambda(),
-                lambdaStack.getCreateJournalLambda()
+                lambdaStack.getCreateJournalLambda(),
+                lambdaStack.getDeleteClientJournalLambda(),
+                lambdaStack.getListJournalLambda(),
+                lambdaStack.getRetrieveClientJournalsLambda()
         );
-
-
         app.synth();
     }
 }

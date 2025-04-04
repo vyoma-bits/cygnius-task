@@ -76,6 +76,11 @@ public class ListMapping implements RequestHandler<APIGatewayProxyRequestEvent, 
         }
     }
 
+    /**
+     * This function is used to convert Dynamo Db item to into a Map that could be used for more purposes.
+     * @param item
+     * @return
+     */
     private Map<String, Object> convertDynamoItemToMap(Map<String, AttributeValue> item) {
         Map<String, Object> result = new HashMap<>();
         for (Map.Entry<String, AttributeValue> entry : item.entrySet()) {

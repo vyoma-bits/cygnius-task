@@ -26,6 +26,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This lambda is used to update the request(If the request has been approved, it updates the corresponding request entry )
+ */
 @Log
 public class UpdateRequestStatus implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private final DynamoDbClient dynamoDbClient = DynamoDbClient.create();
@@ -36,6 +39,8 @@ public class UpdateRequestStatus implements RequestHandler<APIGatewayProxyReques
     private static final String MAPPING = "MAPPING";
     private static final String JOURNAL_ACCESS = "JOURNAL_ACCESS";
     private final String GET_REQUEST_DETAILS_LAMBDA = System.getenv("GET_REQUEST_DETAILS_LAMBDA");
+    private final String CREATE_MAPPING_LAMBDA = System.getenv("CREATE_MAPPING_LAMBDA");
+    private final String SESSION_UPDATE_LAMBDA = System.getenv("SESSION_UPDATE_LAMBDA");
     private final String UPDATE_MAPPING_LAMBDA = System.getenv("UPDATE_MAPPING_LAMBDA");
 
     @Override
@@ -54,11 +59,10 @@ public class UpdateRequestStatus implements RequestHandler<APIGatewayProxyReques
 
             boolean isApproved = Boolean.parseBoolean(isApprovedStr);
             Event requestDetails = getRequestDetails(requestId);
-
             if (requestDetails == null) {
                 return response.withStatusCode(404).withBody("{\"error\":\"Request not found\"}");
             }
-
+            log.info(requestDetails.toString());
             updateRequestStatus(requestId, isApproved);
 
             if (isApproved) {
@@ -88,17 +92,23 @@ public class UpdateRequestStatus implements RequestHandler<APIGatewayProxyReques
 
     private Event getRequestDetails(String requestId) throws Exception {
         try {
-            // Construct the function name with requestId as a path parameter
-            String functionWithParam = GET_REQUEST_DETAILS_LAMBDA + ":" + requestId;
+            APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
+            Map<String, String> pathParameters = new HashMap<>();
+            pathParameters.put("requestId", requestId);
+            requestEvent.setPathParameters(pathParameters);
+
+            String requestJson = objectMapper.writeValueAsString(requestEvent);
 
             InvokeRequest invokeRequest = InvokeRequest.builder()
-                    .functionName(functionWithParam)  // ✅ Pass requestId as a path param
+                    .functionName(GET_REQUEST_DETAILS_LAMBDA)
+                    .payload(SdkBytes.fromUtf8String(requestJson))
                     .build();
 
             InvokeResponse invokeResponse = lambdaClient.invoke(invokeRequest);
             String responseJson = invokeResponse.payload().asUtf8String();
 
-            Response event = objectMapper.readValue(responseJson, Response.class);
+            APIGatewayProxyResponseEvent lambdaResponse = objectMapper.readValue(responseJson, APIGatewayProxyResponseEvent.class);
+            Response event = objectMapper.readValue(lambdaResponse.getBody(), Response.class);
             return objectMapper.convertValue(event.getData(), Event.class);
         } catch (Exception e) {
             log.severe("Error invoking GetRequestDetailsLambda: " + e.getMessage());
@@ -139,9 +149,27 @@ public class UpdateRequestStatus implements RequestHandler<APIGatewayProxyReques
         updateRequest.setEntity(session);
         updateRequest.setFieldsToUpdate(List.of("clientId"));
 
-        String requestBody = objectMapper.writeValueAsString(updateRequest);
-        Map<String, String> queryParams = Map.of("therapistId", therapistId);
-        invokeFunction("UpdateSessionLambda", "/sessions/" + sessionId, queryParams, requestBody);
+        APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
+        Map<String, String> pathParameters = new HashMap<>();
+        pathParameters.put("sessionId", sessionId);
+        requestEvent.setPathParameters(pathParameters);
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("therapistId", therapistId);
+        requestEvent.setQueryStringParameters(queryParams);
+        requestEvent.setBody(objectMapper.writeValueAsString(updateRequest));
+        String requestJson = objectMapper.writeValueAsString(requestEvent);
+        InvokeRequest invokeRequest = InvokeRequest.builder()
+                .functionName(SESSION_UPDATE_LAMBDA)
+                .payload(SdkBytes.fromUtf8String(requestJson))
+                .build();
+
+        InvokeResponse invokeResponse = lambdaClient.invoke(invokeRequest);
+
+        if (invokeResponse.functionError() != null) {
+            throw new Exception("Error invoking UpdateSessionLambda: " + invokeResponse.functionError());
+        }
+
+        log.info("Successfully invoked UpdateSessionLambda");
     }
 
     private void processMapping(Event requestDetails) throws Exception {
@@ -153,18 +181,30 @@ public class UpdateRequestStatus implements RequestHandler<APIGatewayProxyReques
         if (clientId == null || therapistId == null) {
             throw new IllegalArgumentException("Missing required parameters");
         }
+        Mapping mapping = Mapping.builder()
+                .clientId(clientId)
+                .therapistId(therapistId)
+                .mappingStatus(MappingStatus.CONNECTED)
+                .journalAccessStatus(JournalAccessStatus.DENIED)
+                .build();
 
-        UpdateRequest<Mapping> updateRequest = new UpdateRequest<>();
-        Mapping mapping = new Mapping();
-        mapping.setMappingStatus(MappingStatus.CONNECTED);
-        updateRequest.setEntity(mapping);
-        updateRequest.setFieldsToUpdate(List.of("mappingStatus"));
+        APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
+        requestEvent.setBody(objectMapper.writeValueAsString(mapping));
+        String requestJson = objectMapper.writeValueAsString(requestEvent);
 
-        String requestBody = objectMapper.writeValueAsString(updateRequest);
-        Map<String, String> queryParams = Map.of("therapistId", therapistId);
-        invokeFunction(UPDATE_MAPPING_LAMBDA, "/mappings/" + clientId, queryParams, requestBody);
+        InvokeRequest invokeRequest = InvokeRequest.builder()
+                .functionName(CREATE_MAPPING_LAMBDA)
+                .payload(SdkBytes.fromUtf8String(requestJson))
+                .build();
+
+        InvokeResponse invokeResponse = lambdaClient.invoke(invokeRequest);
+
+        if (invokeResponse.functionError() != null) {
+            throw new Exception("Error invoking CreateMappingLambda: " + invokeResponse.functionError());
+        }
+
+        log.info("Successfully invoked CreateMappingLambda");
     }
-
     private void processJournalAccess(Event requestDetails) throws Exception {
         log.info("Processing JOURNAL_ACCESS request");
 
@@ -181,30 +221,26 @@ public class UpdateRequestStatus implements RequestHandler<APIGatewayProxyReques
         updateRequest.setEntity(mapping);
         updateRequest.setFieldsToUpdate(List.of("journalAccessStatus"));
 
-        String requestBody = objectMapper.writeValueAsString(updateRequest);
-        Map<String, String> queryParams = Map.of("therapistId", therapistId);
-        invokeFunction(UPDATE_MAPPING_LAMBDA, "/mappings/" + clientId, queryParams, requestBody);
-    }
-
-    private void invokeFunction(String functionName, String apiPath, Map<String, String> queryParams, String requestBody) throws Exception {
-        String queryString = queryParams.entrySet().stream()
-                .map(entry -> entry.getKey() + "=" + entry.getValue())
-                .reduce((p1, p2) -> p1 + "&" + p2)
-                .orElse("");
-
-        String fullPath = apiPath + (queryString.isEmpty() ? "" : "?" + queryString);
-
+        APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
+        Map<String, String> pathParameters = new HashMap<>();
+        pathParameters.put("mappingId", clientId);
+        requestEvent.setPathParameters(pathParameters);
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("therapistId", therapistId);
+        requestEvent.setQueryStringParameters(queryParams);
+        requestEvent.setBody(objectMapper.writeValueAsString(updateRequest));
+        String requestJson = objectMapper.writeValueAsString(requestEvent);
         InvokeRequest invokeRequest = InvokeRequest.builder()
-                .functionName(functionName)
-                .payload(SdkBytes.fromUtf8String(requestBody))
+                .functionName(UPDATE_MAPPING_LAMBDA)
+                .payload(SdkBytes.fromUtf8String(requestJson))
                 .build();
 
         InvokeResponse invokeResponse = lambdaClient.invoke(invokeRequest);
 
         if (invokeResponse.functionError() != null) {
-            throw new Exception("Error invoking " + functionName);
+            throw new Exception("Error invoking UpdateMappingLambda: " + invokeResponse.functionError());
         }
 
-        log.info("Successfully invoked " + functionName);
+        log.info("Successfully invoked UpdateMappingLambda");
     }
 }

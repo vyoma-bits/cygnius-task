@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * This lambda is used to create a request
+ * This lambda is used to create a request(Request can be of Slot booking,Mapping Request,JournalAccessRequest)
  */
 @Log
 public class CreateRequest implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {

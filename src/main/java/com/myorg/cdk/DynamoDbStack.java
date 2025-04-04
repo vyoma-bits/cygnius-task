@@ -12,7 +12,7 @@ public class DynamoDbStack extends Stack {
 
         // 1. Messages Table
         Table messagesTable = Table.Builder.create(this, "Messages")
-                .tableName("Messages")
+                .tableName(CollectionNames.MESSAGES)
                 .partitionKey(Attribute.builder().name("message_id").type(AttributeType.STRING).build())
                 .sortKey(Attribute.builder().name("timestamp").type(AttributeType.STRING).build())
                 .billingMode(BillingMode.PAY_PER_REQUEST)
@@ -40,7 +40,7 @@ public class DynamoDbStack extends Stack {
 
         // 3. Therapists Table
         Table therapistsTable = Table.Builder.create(this, "Therapists")
-                .tableName("Therapists")
+                .tableName(CollectionNames.THERAPISTS)
                 .partitionKey(Attribute.builder().name("therapist_id").type(AttributeType.STRING).build())
                 .billingMode(BillingMode.PAY_PER_REQUEST)
                 .build();
@@ -69,7 +69,6 @@ public class DynamoDbStack extends Stack {
         Table journalsTable = Table.Builder.create(this, "Journals")
                 .tableName(CollectionNames.JOURNALS)
                 .partitionKey(Attribute.builder().name("journalId").type(AttributeType.STRING).build())
-                .sortKey(Attribute.builder().name("timestamp").type(AttributeType.STRING).build())
                 .billingMode(BillingMode.PAY_PER_REQUEST)
                 .build();
 
@@ -89,7 +88,7 @@ public class DynamoDbStack extends Stack {
 
         // 5. Requests Table
         Table requestsTable = Table.Builder.create(this, "Requests")
-                .tableName("Requests")
+                .tableName(CollectionNames.REQUESTS)
                 .partitionKey(Attribute.builder().name("requestId").type(AttributeType.STRING).build())
                 .billingMode(BillingMode.PAY_PER_REQUEST)
                 .build();
@@ -110,7 +109,7 @@ public class DynamoDbStack extends Stack {
 
         // 6. Sessions Table
         Table sessionsTable = Table.Builder.create(this, "Sessions")
-                .tableName("Sessions")
+                .tableName(CollectionNames.SESSIONS)
                 .partitionKey(Attribute.builder().name("session_id").type(AttributeType.STRING).build())
                 .sortKey(Attribute.builder().name("therapist_id").type(AttributeType.STRING).build())
                 .billingMode(BillingMode.PAY_PER_REQUEST)
@@ -183,7 +182,6 @@ public class DynamoDbStack extends Stack {
                 .projectionType(ProjectionType.ALL)
                 .build());
 
-// Add this GSI to query all therapist mappings for a specific client
         mappingsTable.addGlobalSecondaryIndex(GlobalSecondaryIndexProps.builder()
                 .indexName("client-therapists-index")
                 .partitionKey(Attribute.builder().name("clientId").type(AttributeType.STRING).build())

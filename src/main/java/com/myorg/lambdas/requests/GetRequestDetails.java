@@ -7,7 +7,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.myorg.CollectionNames;
 import com.myorg.Messages.Response;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * This lambda is used to get the details of the request item
  */
-@Slf4j
+@Log
 public class GetRequestDetails implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     private final DynamoDbClient dynamoDbClient = DynamoDbClient.create();
@@ -30,16 +30,16 @@ public class GetRequestDetails implements RequestHandler<APIGatewayProxyRequestE
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent event, Context context) {
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
         try {
-            log.info("Received event: {}", event);
+            log.info("Received event: " + event);
             String requestId = event.getPathParameters() != null ? event.getPathParameters().get("requestId") : null;
 
-
             if (requestId == null || requestId.isEmpty()) {
-                log.warn("Missing required parameter: requestId");
-                return response.withStatusCode(400).withBody(objectMapper.writeValueAsString(new Response(false, "Missing required parameter: requestId", null)));
+                log.warning("Missing required parameter: requestId");
+                return response.withStatusCode(400)
+                        .withBody(objectMapper.writeValueAsString(new Response(false, "Missing required parameter: requestId", null)));
             }
 
-            log.info("Querying for requestId: {}", requestId);
+            log.info("Querying for requestId: " + requestId);
             Map<String, AttributeValue> expressionValues = new HashMap<>();
             expressionValues.put(":requestId", AttributeValue.builder().s(requestId).build());
 
@@ -52,24 +52,31 @@ public class GetRequestDetails implements RequestHandler<APIGatewayProxyRequestE
             QueryResponse queryResponse = dynamoDbClient.query(queryRequest);
             List<Map<String, AttributeValue>> items = queryResponse.items();
 
-            log.info("Query result count: {}", items.size());
+            log.info("Query result count: " + items.size());
 
             if (items.isEmpty()) {
-                log.warn("Request not found for requestId: {}", requestId);
-                return response.withStatusCode(404).withBody(objectMapper.writeValueAsString(new Response(false, "Request not found", null)));
+                log.warning("Request not found for requestId: " + requestId);
+                return response.withStatusCode(404)
+                        .withBody(objectMapper.writeValueAsString(new Response(false, "Request not found", null)));
             }
 
             Map<String, Object> requestData = convertDynamoItemToMap(items.get(0));
 
-            log.info("Request details fetched successfully for requestId: {}", requestId);
-            return response.withStatusCode(200).withBody(objectMapper.writeValueAsString(new Response(true, "Request details fetched successfully", requestData)));
+            log.info("Request details fetched successfully for requestId: " + requestId);
+            return response.withStatusCode(200)
+                    .withBody(objectMapper.writeValueAsString(new Response(true, "Request details fetched successfully", requestData)));
 
         } catch (Exception e) {
-            log.error("Error while fetching request details: ", e);
+            log.severe("Error while fetching request details: " + e.getMessage());
             return response.withStatusCode(500).withBody("{\"error\": \"" + e.getMessage() + "\"}");
         }
     }
 
+    /**
+     * This function is used to convert Dynamo Db item to into a Map.
+     * @param item
+     * @return
+     */
     private Map<String, Object> convertDynamoItemToMap(Map<String, AttributeValue> item) {
         Map<String, Object> result = new HashMap<>();
         for (Map.Entry<String, AttributeValue> entry : item.entrySet()) {
