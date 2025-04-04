@@ -29,8 +29,7 @@ public class RetrieveClientJournals implements RequestHandler<APIGatewayProxyReq
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
         try {
             log.info("Received event: {}", event);
-
-            String clientId = event.getQueryStringParameters() != null ? event.getQueryStringParameters().get("clientId") : null;
+            String clientId = event.getPathParameters() != null ? event.getPathParameters().get("clientId") : null;
             if (clientId == null || clientId.isEmpty()) {
                 log.warn("Missing required parameter: clientId");
                 return response.withStatusCode(400).withBody("{\"success\": false, \"message\": \"Missing required parameter: clientId\"}");

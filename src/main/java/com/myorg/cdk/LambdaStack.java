@@ -79,7 +79,7 @@ public class LambdaStack extends Stack {
         Role mappingCrudRole = createCrudRole("MappingCrudRole", mappingTableArn);
         Role mappingReadRole = createReadOnlyRole("MappingReadRole", mappingTableArn);
         Role journalCrudRole = createCrudRole("JournalCrudRole", journalTableArn);
-        Role journalReadRole = createReadOnlyRole("JournalReadRole", journalTableArn);
+        Role journalReadRole = createReadOnlyRoleWithIndexes("JournalReadRole", journalTableArn,journalIndexArns);
 
         // Messages Lambdas
         messagesLambda = LambdaFactory.createLambda(this, "MessagesLambda",

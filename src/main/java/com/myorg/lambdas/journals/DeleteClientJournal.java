@@ -27,7 +27,7 @@ public class DeleteClientJournal implements RequestHandler<APIGatewayProxyReques
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
         try {
             log.info("Received event: {}", event);
-            String journalId = event.getQueryStringParameters() != null ? event.getQueryStringParameters().get("journalId") : null;
+            String journalId = event.getPathParameters() != null ? event.getPathParameters().get("journalId") : null;
             if (journalId == null || journalId.isEmpty()) {
                 log.warn("Missing required parameter: journalId");
                 return response.withStatusCode(400).withBody(objectMapper.writeValueAsString(new Response(false, "Missing required parameter: journalId", null)));

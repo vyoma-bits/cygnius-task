@@ -65,9 +65,11 @@ public class ApiGatewayStack extends Stack {
  */
         Resource journalResource = api.getRoot().addResource("journals");
         journalResource.addMethod("POST", LambdaIntegration.Builder.create(createJournallambda).build());
-        journalResource.addMethod("GET", LambdaIntegration.Builder.create(listJournal).build());
-        journalResource.addMethod("DELETE", LambdaIntegration.Builder.create(deleteClientJournal).build());
-        Resource clientJournalsResource = journalResource.addResource("client");
-        clientJournalsResource.addMethod("GET", LambdaIntegration.Builder.create(retrieveClientJournals).build());
+        Resource journalByIdResource = journalResource.addResource("{journalId}");
+        journalByIdResource.addMethod("GET", LambdaIntegration.Builder.create(listJournal).build());
+        journalByIdResource.addMethod("DELETE", LambdaIntegration.Builder.create(deleteClientJournal).build());
+        Resource clientResource = journalResource.addResource("client");
+        Resource clientByIdResource = clientResource.addResource("{clientId}");
+        clientByIdResource.addMethod("GET", LambdaIntegration.Builder.create(retrieveClientJournals).build());
     }
 }
